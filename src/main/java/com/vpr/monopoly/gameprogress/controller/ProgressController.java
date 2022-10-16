@@ -15,7 +15,7 @@ import static com.vpr.monopoly.gameprogress.config.OpenApiConfig.PROGRESS;
 
 @Tag(name = PROGRESS, description = "API для управления ходом игры")
 @RestController
-@RequestMapping("v1/progress")
+@RequestMapping("/v1/progress")
 @Validated
 @RequiredArgsConstructor
 @Slf4j
