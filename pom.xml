@@ -14,19 +14,48 @@
 	<name>monopoly</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
+		<!--project setting-->
 		<java.version>11</java.version>
+
+		<!--dependency versions-->
+		<swagger-annotations.version>2.2.2</swagger-annotations.version>
+		<springdoc-openapi-ui.version>1.6.10</springdoc-openapi-ui.version>
+		<commons-collections4.version>4.4</commons-collections4.version>
+		<hibernate-types-52.version>2.14.1</hibernate-types-52.version>
 	</properties>
 	<dependencies>
+		<!--web-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>${swagger-annotations.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>${springdoc-openapi-ui.version}</version>
+		</dependency>
 
+		<!--utils-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+		<!--tests-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
