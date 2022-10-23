@@ -12,10 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StartDataDto {
-
     @Schema(description = "Список игроков")
-    private PlayerDto[] players;
-
-    @Schema(description = "Список всех карт имущества на поле")
-    private RealtyCardDto[] realtyList;
+    private Object[] players;
 }
