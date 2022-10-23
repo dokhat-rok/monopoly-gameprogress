@@ -13,18 +13,25 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerDto {
+
     @Schema(description = "Массив из последних 2-х бросков кубика")
     private int[] lastRoll;
+
     @Schema(description = "Количество дублей")
     private int countDouble;
+
     @Schema(description = "Позиция на поле")
     private int position;
+
     @Schema(description = "Карта выхода из тюрьмы")
     private int prisonOutCard;
+
     @Schema(description = "Деньги")
     private Long money;
+
     @Schema(description = "Список имущества")
     private List<RealtyCardDto> realtyList;
-    @Schema(description = "Количество дублей")
+
+    @Schema(description = "Наименование фигуры")
     private String playerFigure;
 }

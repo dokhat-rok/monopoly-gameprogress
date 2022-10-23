@@ -8,16 +8,19 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
-@Schema(description = "Модель карты шанса")
+@Schema(description = "Модель карты общественной казны и шанса")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChanceCardDto {
+public class CardDto {
+
     @Schema(description = "Действия")
     private List<String> actions;
+
     @Schema(description = "Описание карты")
     private String description;
+
     @Schema(description = "Атрибуты карты")
     private Map<String, String> options;
 }
