@@ -79,19 +79,16 @@ public class ProgressController {
     @PutMapping("/action")
     public ResponseEntity<ActionDto> actionPlayer(){
         log.info("Player action");
-        ArrayList<PlayerDto> players = new ArrayList<>();
-        players.add(PlayerDto.builder()
-                .lastRoll(new int[]{5, 0})
-                .countDouble(0)
-                .position(5)
-                .prisonOutCard(0)
-                .money(10000L)
-                .realtyList(new ArrayList<>())
-                .playerFigure("Car")
-                .build()
-        );
         Map<String, Object> actionBody = new HashMap<>();
-        actionBody.put("Player", players);
+        actionBody.put(
+                "Player",
+                PlayerDto.builder()
+                    .lastRoll(new int[]{5, 0})
+                    .money(10000L)
+                    .realtyList(new ArrayList<>())
+                    .playerFigure("Ship")
+                    .build()
+        );
         return ResponseEntity.ok(
                 new ActionDto()
                         .toBuilder()
