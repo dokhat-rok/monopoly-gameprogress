@@ -48,6 +48,12 @@
 			<version>${springdoc-openapi-ui.version}</version>
 		</dependency>
 
+		<!--datasource-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
 		<!--utils-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
