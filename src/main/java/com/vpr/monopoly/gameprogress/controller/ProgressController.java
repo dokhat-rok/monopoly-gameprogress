@@ -38,20 +38,14 @@ public class ProgressController {
         log.info("Create {} players with figures {}", count, playerFigures);
         ArrayList<PlayerDto> players = new ArrayList<>();
         players.add(PlayerDto.builder()
-                .lastRoll(new int[]{0, 0})
-                .countDouble(0)
-                .position(0)
-                .prisonOutCard(0)
+                .lastRoll(new int[2])
                 .money(10000L)
                 .realtyList(new ArrayList<>())
                 .playerFigure("Car")
                 .build()
         );
         players.add(PlayerDto.builder()
-                .lastRoll(new int[]{0, 0})
-                .countDouble(0)
-                .position(0)
-                .prisonOutCard(0)
+                .lastRoll(new int[2])
                 .money(10000L)
                 .realtyList(new ArrayList<>())
                 .playerFigure("Ship")
@@ -70,6 +64,7 @@ public class ProgressController {
         return ResponseEntity.ok(
                 new StartDataDto()
                         .toBuilder()
+                        .token(String.valueOf(System.currentTimeMillis()))
                         .players(players)
                         .realtyList(realty)
                         .build()
@@ -93,7 +88,7 @@ public class ProgressController {
                 new ActionDto()
                         .toBuilder()
                         .actionBody(actionBody)
-                        .actionType("DropDice")
+                        .actionType(ActionType.DROP_DICE.getLabel())
                         .build()
         );
     }

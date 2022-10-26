@@ -15,6 +15,9 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class StartDataDto {
 
+    @Schema(description = "Токен созданной сессии")
+    private String token;
+
     @Schema(description = "Список игроков")
     private ArrayList<PlayerDto> players;
 
