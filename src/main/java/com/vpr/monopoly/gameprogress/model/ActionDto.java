@@ -18,5 +18,5 @@ public class ActionDto {
     private String actionType;
 
     @Schema(description = "Действие")
-    private Map<String, String> actionBody;
+    private Map<String, Object> actionBody;
 }
