@@ -38,18 +38,18 @@ public class ProgressController {
         log.info("Create {} players with figures {}", count, playerFigures);
         ArrayList<PlayerDto> players = new ArrayList<>();
         players.add(PlayerDto.builder()
-                .lastRoll(new int[]{4, 6})
-                .countDouble(2)
+                .lastRoll(new int[]{0, 0})
+                .countDouble(0)
                 .position(0)
-                .prisonOutCard(1)
+                .prisonOutCard(0)
                 .money(10000L)
                 .realtyList(new ArrayList<>())
                 .playerFigure("Car")
                 .build()
         );
         players.add(PlayerDto.builder()
-                .lastRoll(new int[]{1, 4})
-                .countDouble(1)
+                .lastRoll(new int[]{0, 0})
+                .countDouble(0)
                 .position(0)
                 .prisonOutCard(0)
                 .money(10000L)
@@ -79,10 +79,23 @@ public class ProgressController {
     @PutMapping("/action")
     public ResponseEntity<ActionDto> actionPlayer(){
         log.info("Player action");
+        ArrayList<PlayerDto> players = new ArrayList<>();
+        players.add(PlayerDto.builder()
+                .lastRoll(new int[]{5, 0})
+                .countDouble(0)
+                .position(5)
+                .prisonOutCard(0)
+                .money(10000L)
+                .realtyList(new ArrayList<>())
+                .playerFigure("Car")
+                .build()
+        );
+        Map<String, Object> actionBody = new HashMap<>();
+        actionBody.put("Player", players);
         return ResponseEntity.ok(
                 new ActionDto()
                         .toBuilder()
-                        .actionBody(new HashMap<>())
+                        .actionBody(actionBody)
                         .actionType("DropDice")
                         .build()
         );
