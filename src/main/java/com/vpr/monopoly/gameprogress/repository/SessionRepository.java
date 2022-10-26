@@ -6,22 +6,14 @@ import java.util.List;
 
 public interface SessionRepository {
 
-    SessionDto find(String key);
+    SessionDto get(String key);
 
-    List<SessionDto> findAll();
+    List<SessionDto> getAll();
 
-    boolean add(String key, SessionDto session);
+    boolean set(String key, SessionDto session);
 
-    boolean update(String key, SessionDto session);
+    boolean remove(String key);
 
-    boolean delete(String key);
-
-    boolean addPlayer(String key, Object player);
-
-    boolean deletePlayer(String key, String figure);
-
-    boolean updatePlayer(String key, Object player);
-
-    boolean updatePlayers(String key, List<Object> players);
+    boolean removeAll();
 
 }
