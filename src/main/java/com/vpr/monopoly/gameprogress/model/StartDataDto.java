@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+
 @Schema(description = "Модель стартовых данных для игры")
 @Data
 @Builder(toBuilder = true)
@@ -14,8 +16,8 @@ import lombok.NoArgsConstructor;
 public class StartDataDto {
 
     @Schema(description = "Список игроков")
-    private PlayerDto[] players;
+    private ArrayList<PlayerDto> players;
 
     @Schema(description = "Список всех карт имущества на поле")
-    private RealtyCardDto[] realtyList;
+    private ArrayList<RealtyCardDto> realtyList;
 }
