@@ -1,10 +1,7 @@
 package com.vpr.monopoly.gameprogress.controller;
 
 
-import com.vpr.monopoly.gameprogress.model.ActionDto;
-import com.vpr.monopoly.gameprogress.model.PlayerDto;
-import com.vpr.monopoly.gameprogress.model.RealtyCardDto;
-import com.vpr.monopoly.gameprogress.model.StartDataDto;
+import com.vpr.monopoly.gameprogress.model.*;
 import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
