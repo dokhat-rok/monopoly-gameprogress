@@ -15,7 +15,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash("Session")
+@RedisHash("SESSION")
 public class SessionDto implements Serializable {
 
     @Schema(description = "Список игроков на поле")

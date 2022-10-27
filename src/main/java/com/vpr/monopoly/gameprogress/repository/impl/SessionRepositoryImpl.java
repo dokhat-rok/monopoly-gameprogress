@@ -14,18 +14,17 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SessionRepositoryImpl implements SessionRepository {
 
-    private final String KEY = "SESSION";
     private final RedisTemplate<String, SessionDto> template;
 
     @Override
     public SessionDto get(String key) {
-        return template.opsForValue().get(KEY + ":" + key);
+        return template.opsForValue().get(key);
     }
 
     @Override
     public List<SessionDto> getAll() {
         List<SessionDto> sessionDtoList = new ArrayList<>();
-        Set<String> keys = template.keys(KEY + ":*");
+        Set<String> keys = template.keys("*");
         if(keys == null){
             return sessionDtoList;
         }
@@ -39,18 +38,18 @@ public class SessionRepositoryImpl implements SessionRepository {
 
     @Override
     public boolean set(String key, SessionDto session) {
-        template.opsForValue().set(KEY + ":" + key, session);
+        template.opsForValue().set(key, session);
         return true;
     }
 
     @Override
     public boolean remove(String key) {
-        return template.opsForValue().getAndDelete(KEY + ":" + key) != null;
+        return template.opsForValue().getAndDelete(key) != null;
     }
 
     @Override
     public boolean removeAll() {
-        Set<String> keys = template.keys(KEY + ":*");
+        Set<String> keys = template.keys("*");
         if(keys == null){
             return false;
         }
