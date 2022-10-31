@@ -36,11 +36,12 @@ public class ProgressController {
         return ResponseEntity.ok(startData);
     }
 
-    @PutMapping("/action")
+    @PutMapping("/action/{token}")
     public ResponseEntity<ActionDto> actionPlayer(
+            @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken,
             @RequestBody ActionDto action
     ){
-        ActionDto resultAction = progressService.actionPlayer(action);
+        ActionDto resultAction = progressService.actionPlayer(sessionToken, action);
         log.info("Player action {}", action.getActionType());
         return ResponseEntity.ok(resultAction);
     }

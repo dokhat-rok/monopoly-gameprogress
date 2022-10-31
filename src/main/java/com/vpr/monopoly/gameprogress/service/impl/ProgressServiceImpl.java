@@ -29,7 +29,7 @@ public class ProgressServiceImpl implements ProgressService {
     }
 
     @Override
-    public ActionDto actionPlayer(ActionDto action) {
+    public ActionDto actionPlayer(String sessionToken, ActionDto action) {
         return null;
     }
 

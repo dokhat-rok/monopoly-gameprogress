@@ -7,7 +7,7 @@ public interface ProgressService {
 
     StartDataDto startGame(Long count, String[] players);
 
-    ActionDto actionPlayer(ActionDto action);
+    ActionDto actionPlayer(String sessionToken, ActionDto action);
 
     String endGame();
 }
