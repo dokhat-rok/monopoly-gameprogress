@@ -10,5 +10,5 @@ public interface BankService {
 
     ActionDto playerToPlayerInteraction(ActionDto action);
 
-    boolean usPlayerToPlayerInteraction(ActionDto action);
+    boolean isPlayerToPlayerInteraction(ActionDto action);
 }

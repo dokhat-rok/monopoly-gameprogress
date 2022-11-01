@@ -25,7 +25,7 @@ public class BankClient implements BankService {
     }
 
     @Override
-    public boolean usPlayerToPlayerInteraction(ActionDto action) {
+    public boolean isPlayerToPlayerInteraction(ActionDto action) {
         return false;
     }
 }
