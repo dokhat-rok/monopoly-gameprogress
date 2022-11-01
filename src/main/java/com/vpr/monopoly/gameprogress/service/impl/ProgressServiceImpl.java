@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class ProgressServiceImpl implements ProgressService {
     }
 
     @Override
-    public String endGame() {
+    public List<String> endGame() {
         return null;
     }
 }

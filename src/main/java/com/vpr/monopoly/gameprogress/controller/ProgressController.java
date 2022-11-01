@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Min;
 
 
+import java.util.List;
+
 import static com.vpr.monopoly.gameprogress.config.OpenApiConfig.PROGRESS;
 
 @Tag(name = PROGRESS, description = "API для управления ходом игры")
@@ -47,8 +49,8 @@ public class ProgressController {
     }
 
     @GetMapping("/endgame")
-    public ResponseEntity<String> endGame(){
-        String history = progressService.endGame();
+    public ResponseEntity<List<String>> endGame(){
+        List<String> history = progressService.endGame();
         log.info("End game");
         return ResponseEntity.ok(history);
     }
