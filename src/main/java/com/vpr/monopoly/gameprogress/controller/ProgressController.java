@@ -69,7 +69,7 @@ public class ProgressController {
     }
 
     @PutMapping("/action")
-    public ResponseEntity<ActionDto> actionPlayer(){
+    public ResponseEntity<ActionDto> actionPlayer(@RequestBody ActionDto action){
         log.info("Player action");
         Map<String, Object> actionBody = new HashMap<>();
         actionBody.put(
