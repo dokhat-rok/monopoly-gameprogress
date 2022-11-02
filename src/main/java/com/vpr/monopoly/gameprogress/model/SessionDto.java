@@ -19,17 +19,20 @@ import java.util.List;
 public class SessionDto implements Serializable {
 
     @Schema(description = "Список игроков на поле")
-    private List<Object> players;
+    private List<PlayerDto> players;
 
     @Schema(description = "Список карточек имущества")
-    private List<Object> realty;
+    private List<RealtyCardDto> realty;
 
     @Schema(description = "Текущая колода карточек шанс")
-    private List<Object> chanceCards;
+    private List<CardDto> chanceCards;
 
     @Schema(description = "Текущая колода карточек городской казны")
-    private List<Object> communityChestCards;
+    private List<CardDto> communityChestCards;
 
     @Schema(description = "Список игроков в тюрьме")
-    private List<Object> playersInPrison;
+    private List<PlayerDto> playersInPrison;
+
+    @Schema(description = "История хода игры")
+    private List<String> history;
 }
