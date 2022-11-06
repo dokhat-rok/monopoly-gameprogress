@@ -23,7 +23,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 log.info("CORS config: allowed-origins={}", Arrays.toString(origins));
-                registry.addMapping("/**").allowedOrigins(origins);
+                registry.addMapping("/**").allowedOrigins(origins).allowedOrigins("/**");
             }
         };
     }

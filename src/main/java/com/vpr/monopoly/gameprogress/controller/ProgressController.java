@@ -3,6 +3,7 @@ package com.vpr.monopoly.gameprogress.controller;
 
 import com.vpr.monopoly.gameprogress.model.*;
 import com.vpr.monopoly.gameprogress.service.ProgressService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class ProgressController {
 
     private final ProgressService progressService;
 
+    @Operation(summary = "Запрос начальных данных для начала игровой сессии")
     @PostMapping("/start/{count}")
     public ResponseEntity<StartDataDto> startGame(
             @PathVariable @Min(2) @Parameter(description = "Количество игроков", example = "2") Long count,
@@ -38,6 +40,7 @@ public class ProgressController {
         return ResponseEntity.ok(startData);
     }
 
+    @Operation(summary = "Запрос на действие игрока в определенной сессии")
     @PutMapping("/action/{token}")
     public ResponseEntity<ActionDto> actionPlayer(
             @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken,
@@ -48,6 +51,7 @@ public class ProgressController {
         return ResponseEntity.ok(resultAction);
     }
 
+    @Operation(summary = "Окончание игровой сессии и получение истории хода игры")
     @GetMapping("/endgame")
     public ResponseEntity<List<String>> endGame(){
         List<String> history = progressService.endGame();
