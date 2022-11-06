@@ -3,6 +3,7 @@ package com.vpr.monopoly.gameprogress.controller;
 
 import com.vpr.monopoly.gameprogress.model.*;
 import com.vpr.monopoly.gameprogress.model.enam.ActionType;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import static com.vpr.monopoly.gameprogress.config.OpenApiConfig.PROGRESS;
 @Slf4j
 public class ProgressController {
 
+    @Operation(summary = "Запрос начальных данных для начала игровой сессии")
     @PostMapping("/start/{count}")
     public ResponseEntity<StartDataDto> startGame(
             @PathVariable @Min(2) @Parameter(description = "Количество игроков", example = "2") Long count,
@@ -53,7 +55,14 @@ public class ProgressController {
                 .position(4)
                 .streetName("Пушкинская")
                 .owner("Boot")
-                .priceMap(new HashMap<>())
+                .priceMap(Map.of(
+                        0L, 10L,
+                        1L, 50L,
+                        2L, 150L,
+                        3L, 310L,
+                        4L, 500L,
+                        5L, 870L
+                ))
                 .costCard(100L)
                 .color("Yellow")
                 .build()
@@ -68,8 +77,9 @@ public class ProgressController {
         );
     }
 
-    @PutMapping("/action")
-    public ResponseEntity<ActionDto> actionPlayer(@RequestBody ActionDto action){
+    @Operation(summary = "Запрос на действие игрока в определенной сессии")
+    @PutMapping("/action/{token}")
+    public ResponseEntity<ActionDto> actionPlayer(@PathVariable(name = "token") String token, @RequestBody ActionDto action){
         log.info("Player action");
         Map<String, Object> actionBody = new HashMap<>();
         actionBody.put(
@@ -90,8 +100,9 @@ public class ProgressController {
         );
     }
 
-    @GetMapping("/endgame")
-    public ResponseEntity<String> startGame(){
+    @Operation(summary = "Окончание игровой сессии и получение истории хода игры")
+    @GetMapping("/endgame/{token}")
+    public ResponseEntity<String> endGame(@PathVariable(name = "token") String token){
         log.info("End game");
         return ResponseEntity.ok(
                 "History"

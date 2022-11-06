@@ -32,6 +32,9 @@ public class RealtyCardDto {
     @Schema(description = "Стоимость дома")
     private String costHouse;
 
+    @Schema(description = "Текущее количество домов")
+    private Long countHouse;
+
     @Schema(description = "Цвет карты")
     private String color;
 }
