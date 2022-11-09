@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @Schema(description = "Активная сессия с текущими данными этой игры")
 @Data
@@ -27,8 +28,8 @@ public class SessionDto implements Serializable {
     @Schema(description = "Текущая колода карточек шанс")
     private List<CardDto> chanceCards;
 
-    @Schema(description = "Текущая колода карточек городской казны")
-    private List<CardDto> communityChestCards;
+    @Schema(description = "Колоды")
+    private Map<String, List<CardDto>> decks;
 
     @Schema(description = "Список игроков в тюрьме")
     private List<PlayerDto> playersInPrison;

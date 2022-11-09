@@ -6,21 +6,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.List;
 
 @Schema(description = "Модель стартовых данных для игры")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class StartDataDto {
+public class StartDataDto implements Serializable {
 
     @Schema(description = "Токен созданной сессии")
     private String token;
 
     @Schema(description = "Список игроков")
-    private ArrayList<PlayerDto> players;
+    private List<PlayerDto> players;
 
     @Schema(description = "Список всех карт имущества на поле")
-    private ArrayList<RealtyCardDto> realtyList;
+    private List<RealtyCardDto> realtyList;
 }

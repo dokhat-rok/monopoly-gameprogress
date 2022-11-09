@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.Map;
 
 @Schema(description = "Модель карты имущества")
@@ -12,7 +14,7 @@ import java.util.Map;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class RealtyCardDto {
+public class RealtyCardDto implements Serializable {
 
     @Schema(description = "Позиция карты на поле")
     private int position;
