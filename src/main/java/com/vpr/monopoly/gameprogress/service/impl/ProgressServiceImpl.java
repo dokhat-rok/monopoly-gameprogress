@@ -59,7 +59,18 @@ public class ProgressServiceImpl implements ProgressService {
 
     @Override
     public ActionDto actionPlayer(String sessionToken, ActionDto action) {
-        return null;
+        SessionDto session = sessionRepository.get(sessionToken);
+
+        /*List<PlayerDto> players = session.getPlayers();
+
+        players.add(players.remove(0)); */
+
+        //TODO добавить бизнес логику
+
+        sessionRepository.set(sessionToken, session);
+
+        return ActionDto.builder()
+                .build();
     }
 
     @Override
