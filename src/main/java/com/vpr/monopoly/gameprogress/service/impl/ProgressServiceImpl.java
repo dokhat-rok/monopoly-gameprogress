@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -40,8 +41,9 @@ public class ProgressServiceImpl implements ProgressService {
                     .build());
         }
 
+        String token = LocalDateTime.now().toString();
         List<RealtyCardDto> realtyCardList = servicesManager.getRealtyManagerService().getAllRealtyCards();
-        sessionRepository.set(LocalDateTime.now().toString(), SessionDto.builder()
+        sessionRepository.set(token, SessionDto.builder()
                         .players(newPlayers)
                         .realty(realtyCardList)
                         .decks(servicesManager.getCardsManagerService().initializingDecks())
@@ -51,7 +53,7 @@ public class ProgressServiceImpl implements ProgressService {
                 );
 
         return StartDataDto.builder()
-                .token(LocalDateTime.now().toString())
+                .token(token)
                 .players(newPlayers)
                 .realtyList(realtyCardList)
                 .build();
