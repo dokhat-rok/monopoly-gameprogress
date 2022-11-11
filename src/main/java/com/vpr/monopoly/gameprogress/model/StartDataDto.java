@@ -14,7 +14,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class StartDataDto implements Serializable {
+public class StartDataDto {
 
     @Schema(description = "Токен созданной сессии")
     private String token;

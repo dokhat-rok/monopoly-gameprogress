@@ -32,32 +32,28 @@ public class ProgressServiceImpl implements ProgressService {
     @Override
     public StartDataDto startGame(Long count, String[] players) {
         List<PlayerDto> newPlayers = new ArrayList<>();
-
         for (String player: players) {
             newPlayers.add(PlayerDto.builder()
                     .playerFigure(player)
                     .money(money)
-                    .realtyList(servicesManager.getRealtyManagerService().getAllRealtyCards())
+                    .realtyList(new ArrayList<>())
                     .build());
         }
 
-        List<PlayerDto> playersInPrison = new ArrayList<>();
-        playersInPrison.add(PlayerDto.builder().build());
-
-        sessionRepository.set(
-                LocalDateTime.now().toString(),
-                SessionDto.builder()
+        List<RealtyCardDto> realtyCardList = servicesManager.getRealtyManagerService().getAllRealtyCards();
+        sessionRepository.set(LocalDateTime.now().toString(), SessionDto.builder()
                         .players(newPlayers)
-                        .realty(servicesManager.getRealtyManagerService().getAllRealtyCards())
+                        .realty(realtyCardList)
                         .decks(servicesManager.getCardsManagerService().initializingDecks())
-                        .playersInPrison(playersInPrison)
+                        .playersInPrison(new ArrayList<>())
+                        .history(new ArrayList<>())
                         .build()
                 );
 
         return StartDataDto.builder()
                 .token(LocalDateTime.now().toString())
                 .players(newPlayers)
-                .realtyList(servicesManager.getRealtyManagerService().getAllRealtyCards())
+                .realtyList(realtyCardList)
                 .build();
     }
 
