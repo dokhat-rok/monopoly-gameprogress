@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.util.List;
 
 @Schema(description = "Модель игрока")
@@ -12,7 +14,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlayerDto {
+public class PlayerDto implements Serializable {
 
     @Schema(description = "Массив из последних 2-х бросков кубика")
     private int[] lastRoll;
