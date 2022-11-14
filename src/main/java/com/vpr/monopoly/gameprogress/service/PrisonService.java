@@ -9,5 +9,5 @@ public interface PrisonService extends MonopolyService {
 
     ActionDto waiting(ActionDto action);
 
-    boolean isWaiting(ActionDto action);
+    Boolean isWaiting(ActionDto action);
 }
