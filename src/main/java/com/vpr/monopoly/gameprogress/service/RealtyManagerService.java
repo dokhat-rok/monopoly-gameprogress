@@ -5,7 +5,7 @@ import com.vpr.monopoly.gameprogress.model.RealtyCardDto;
 
 import java.util.List;
 
-public interface RealtyManagerService {
+public interface RealtyManagerService extends MonopolyService {
     ActionDto playerToBankInteraction(ActionDto action);
 
     boolean isPlayerToBankInteraction(ActionDto action);
