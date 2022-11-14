@@ -21,7 +21,7 @@ public class PrisonClient implements PrisonService {
     }
 
     @Override
-    public boolean isWaiting(ActionDto action) {
+    public Boolean isWaiting(ActionDto action) {
         return false;
     }
 }

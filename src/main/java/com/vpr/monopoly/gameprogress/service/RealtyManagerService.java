@@ -8,11 +8,11 @@ import java.util.List;
 public interface RealtyManagerService extends MonopolyService {
     ActionDto playerToBankInteraction(ActionDto action);
 
-    boolean isPlayerToBankInteraction(ActionDto action);
+    Boolean isPlayerToBankInteraction(ActionDto action);
 
     ActionDto playerToPlayerInteraction(ActionDto action);
 
-    boolean isPlayerToPlayerInteraction(ActionDto action);
+    Boolean isPlayerToPlayerInteraction(ActionDto action);
 
     List<RealtyCardDto> getAllRealtyCards();
 }

@@ -18,7 +18,7 @@ public class RealtyManagerClient implements RealtyManagerService {
     }
 
     @Override
-    public boolean isPlayerToBankInteraction(ActionDto action) {
+    public Boolean isPlayerToBankInteraction(ActionDto action) {
         return false;
     }
 
@@ -28,7 +28,7 @@ public class RealtyManagerClient implements RealtyManagerService {
     }
 
     @Override
-    public boolean isPlayerToPlayerInteraction(ActionDto action) {
+    public Boolean isPlayerToPlayerInteraction(ActionDto action) {
         return false;
     }
 
