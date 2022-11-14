@@ -2,7 +2,7 @@ package com.vpr.monopoly.gameprogress.service;
 
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 
-public interface BankService {
+public interface BankService extends MonopolyService{
 
     ActionDto playerToBankInteraction(ActionDto action);
 

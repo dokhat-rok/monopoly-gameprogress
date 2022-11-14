@@ -3,7 +3,7 @@ package com.vpr.monopoly.gameprogress.service;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
 
-public interface PrisonService {
+public interface PrisonService extends MonopolyService {
 
     PlayerDto imprisonPlayer(PlayerDto player);
 
