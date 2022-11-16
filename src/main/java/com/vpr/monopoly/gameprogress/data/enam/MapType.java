@@ -7,25 +7,20 @@ import lombok.Getter;
 @Getter
 public enum MapType {
 
-    START_CELL("StartCell"),
+    START_CELL,
 
-    PAY_CELL("PayCell"),
+    PAY_CELL,
 
-    COMMUNITY_CHEST_CELL("CommunityChestCell"),
+    COMMUNITY_CHEST_CELL,
 
-    CHANCE_CELL("ChanceCell"),
+    CHANCE_CELL,
 
-    REALTY_CELL("RealtyCell"),
+    REALTY_CELL,
 
-    PARKING_CELL("ParkingCell"),
+    PARKING_CELL,
 
-    VISITING_PRISON_CELL("VisitingPrisonCell"),
+    VISITING_PRISON_CELL,
 
-    TO_PRISON_CELL("ToPrisonCell");
+    TO_PRISON_CELL
 
-    private final String label;
-
-    MapType(String label) {
-        this.label = label;
-    }
 }
