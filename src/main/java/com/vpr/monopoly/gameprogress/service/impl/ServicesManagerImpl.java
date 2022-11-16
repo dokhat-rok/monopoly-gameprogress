@@ -1,6 +1,5 @@
 package com.vpr.monopoly.gameprogress.service.impl;
 
-import com.vpr.monopoly.gameprogress.model.enam.ServiceType;
 import com.vpr.monopoly.gameprogress.service.*;
 import com.vpr.monopoly.gameprogress.service.client.BankClient;
 import com.vpr.monopoly.gameprogress.service.client.CardsManagerClient;
@@ -9,72 +8,66 @@ import com.vpr.monopoly.gameprogress.service.client.RealtyManagerClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 @Slf4j
 public class ServicesManagerImpl implements ServicesManager {
 
-    private Map<ServiceType, MonopolyService> services;
+    private BankService bankService;
 
-    private ServicesManagerImpl(){
+    private CardsManagerService cardsManagerService;
+
+    private PrisonService prisonService;
+
+    private RealtyManagerService realtyManagerService;
+
+    public ServicesManagerImpl(){
         this.checkConnect();
     }
 
     @Override
     public BankService getBankService() {
-        return (BankService) services.get(ServiceType.BANK);
+        return bankService;
     }
 
     @Override
     public CardsManagerService getCardsManagerService() {
-        return (CardsManagerService) services.get(ServiceType.CARDS_MANAGER);
+        return cardsManagerService;
     }
 
     @Override
     public PrisonService getPrisonService() {
-        return (PrisonService) services.get(ServiceType.PRISON);
+        return prisonService;
     }
 
     @Override
     public RealtyManagerService getRealtyManagerService() {
-        return (RealtyManagerService) services.get(ServiceType.REALTY_MANAGER);
+        return realtyManagerService;
     }
 
     @Override
     public void checkConnect() {
-        Map<ServiceType, MonopolyService> checkedServices = new HashMap<>(Map.of(
-                ServiceType.BANK, new BankClient(),
-                ServiceType.CARDS_MANAGER, new CardsManagerClient(),
-                ServiceType.REALTY_MANAGER, new RealtyManagerClient(),
-                ServiceType.PRISON, new PrisonClient()
-        ));
-
-        ServiceType type = ServiceType.BANK;
-        BankService bankService = (BankService) checkedServices.get(type);
+        BankService bankService = new BankClient();
         if(!bankService.checkConnection()){
-            checkedServices.put(type, new BankServiceImpl());
+            bankService = new BankServiceImpl();
         }
+        this.bankService = bankService;
 
-        type = ServiceType.CARDS_MANAGER;
-        CardsManagerService cardsManagerService = (CardsManagerService) checkedServices.get(type);
-        if (!getBankService().checkConnection()){
-            checkedServices.put(type, new CardsManagerServiceImpl());
+        CardsManagerService cardsManagerService = new CardsManagerClient();
+        if (!cardsManagerService.checkConnection()){
+            cardsManagerService = new CardsManagerServiceImpl();
         }
+        this.cardsManagerService = cardsManagerService;
 
-        type = ServiceType.PRISON;
-        PrisonService prisonService = (PrisonService) checkedServices.get(type);
+        PrisonService prisonService = new PrisonClient();
         if(!prisonService.checkConnection()){
-            checkedServices.put(type, new PrisonServiceImpl());
+            prisonService = new PrisonServiceImpl();
         }
+        this.prisonService = prisonService;
 
-        type = ServiceType.REALTY_MANAGER;
-        RealtyManagerService realtyManagerService = (RealtyManagerService) checkedServices.get(type);
+        RealtyManagerService realtyManagerService = new RealtyManagerClient();
         if(!realtyManagerService.checkConnection()){
-            checkedServices.put(type, new RealtyManagerServiceImpl());
+            realtyManagerService = new RealtyManagerServiceImpl();
         }
-
-        services = checkedServices;
+        this.realtyManagerService = realtyManagerService;
     }
 }
