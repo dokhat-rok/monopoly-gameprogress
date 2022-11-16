@@ -21,7 +21,7 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public ActionDto playerToBankInteraction(ActionDto action) {
-        log.info("Requesting... to {}", ServiceType.BANK);
+        log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto result = null;
 
         if(action.getActionType().equals(ActionType.MONEY_OPERATION.getLabel())){
@@ -36,26 +36,26 @@ public class BankServiceImpl implements BankService {
             result = action;
         }
 
-        log.info("Response {} ==> {}", ServiceType.BANK, result);
+        log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);
         return result;
     }
 
     @Override
     public Boolean isPlayerToBankInteraction(ActionDto action) {
-        log.info("Requesting... to {}", ServiceType.BANK);
+        log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto resultAction = this.playerToBankInteraction(action);
 
         List<?> playerList = objectMapper.convertValue(resultAction.getActionBody().get("playerList"), List.class);
         PlayerDto player = (PlayerDto) playerList.get(0);
         Boolean result = player.getMoney() >= 0;
 
-        log.info("Response {} ==> {}", ServiceType.BANK, result);
+        log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);
         return result;
     }
 
     @Override
     public ActionDto playerToPlayerInteraction(ActionDto action) {
-        log.info("Requesting... to {}", ServiceType.BANK);
+        log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto result = null;
 
         if(action.getActionType().equals(ActionType.MONEY_OPERATION.getLabel())){
@@ -71,13 +71,13 @@ public class BankServiceImpl implements BankService {
             action.getActionBody().remove("money");
             result = action;
         }
-        log.info("Response {} ==> {}", ServiceType.BANK, result);
+        log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);
         return result;
     }
 
     @Override
     public Boolean isPlayerToPlayerInteraction(ActionDto action) {
-        log.info("Requesting... to {}", ServiceType.BANK);
+        log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto resultAction = this.playerToPlayerInteraction(action);
 
         List<?> playerList = objectMapper.convertValue(resultAction.getActionBody().get("playerList"), List.class);
@@ -85,7 +85,7 @@ public class BankServiceImpl implements BankService {
         PlayerDto player2 = (PlayerDto) playerList.get(1);
         Boolean result = player1.getMoney() >= 0 && player2.getMoney() >= 0;
 
-        log.info("Response {} ==> {}", ServiceType.BANK, result);
+        log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);
         return result;
     }
 }

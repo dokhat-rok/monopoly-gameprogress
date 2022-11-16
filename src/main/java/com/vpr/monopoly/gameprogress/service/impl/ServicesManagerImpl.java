@@ -61,7 +61,7 @@ public class ServicesManagerImpl implements ServicesManager {
 
         PrisonService prisonService = new PrisonClient(this);
         if(!prisonService.checkConnection()){
-            prisonService = new PrisonServiceImpl();
+            prisonService = new PrisonServiceImpl(this);
         }
         this.prisonService = prisonService;
 

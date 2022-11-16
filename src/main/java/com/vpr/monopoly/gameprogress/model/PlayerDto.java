@@ -36,4 +36,7 @@ public class PlayerDto implements Serializable {
 
     @Schema(description = "Наименование фигуры")
     private String playerFigure;
+
+    @Schema(description = "Нахождение в тюрьме")
+    private Long inPrison;
 }
