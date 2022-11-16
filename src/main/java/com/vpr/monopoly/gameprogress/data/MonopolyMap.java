@@ -2,23 +2,15 @@ package com.vpr.monopoly.gameprogress.data;
 
 import com.vpr.monopoly.gameprogress.data.enam.MapType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Schema(description = "Карта игры")
-@Data
-@Builder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
 public class MonopolyMap {
 
     @Schema(description = "Карты на поле")
-    static Map<Integer, MapType> data = new HashMap<>(){
+    public static final Map<Integer, MapType> data = new HashMap<>(){
         {
             put(0, MapType.START_CELL);
             put(1, MapType.REALTY_CELL);
