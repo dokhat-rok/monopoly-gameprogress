@@ -8,6 +8,7 @@ import com.vpr.monopoly.gameprogress.service.client.RealtyManagerClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+//TODO сделать класс паттерном - синглтон
 @Service
 @Slf4j
 public class ServicesManagerImpl implements ServicesManager {
@@ -58,7 +59,7 @@ public class ServicesManagerImpl implements ServicesManager {
         }
         this.cardsManagerService = cardsManagerService;
 
-        PrisonService prisonService = new PrisonClient();
+        PrisonService prisonService = new PrisonClient(this);
         if(!prisonService.checkConnection()){
             prisonService = new PrisonServiceImpl();
         }

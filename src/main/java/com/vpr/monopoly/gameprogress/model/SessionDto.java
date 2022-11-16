@@ -28,6 +28,7 @@ public class SessionDto implements Serializable {
     @Schema(description = "Колоды")
     private Map<String, List<CardDto>> decks;
 
+    //TODO убрать список игрков в тюрьме - излишек
     @Schema(description = "Список игроков в тюрьме")
     private List<PlayerDto> playersInPrison;
 
