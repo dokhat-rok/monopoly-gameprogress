@@ -77,8 +77,10 @@ public class ProgressServiceImpl implements ProgressService {
                 int secondThrow = (int) (Math.random() * 7);
 
                 player.setLastRoll(new int[] {firstThrow, secondThrow});
+                //TODO неправильный расчёт позиции
                 player.setPosition(firstThrow + secondThrow);
 
+                //TODO Перевроверить логику, есть избыточность, второе и третье условия не будет срабатывать
                 if (firstThrow == secondThrow && player.getCountDouble() != 3) {
                     player.setCountDouble(player.getCountDouble() + 1);
                 }
@@ -92,6 +94,7 @@ public class ProgressServiceImpl implements ProgressService {
                     player.setPosition(10);
                 }
 
+                //TODO можно сразу передавать карту в метод без создания доп переменной
                 MapType mapType = MonopolyMap.getTypeByCellNumber(player.getPosition());
                 generationPossibleActions(mapType, player, players, resultAction, session);
                 actionSwap(players, resultAction);
@@ -111,6 +114,7 @@ public class ProgressServiceImpl implements ProgressService {
                     player.setMoney(player.getMoney() - card.getCostCard());
                     addActionByType(resultAction, "EndTurn");
                 }
+                //TODO убрать большую вложенность
                 else if (!card.getOwner().equals("")) {
                     for (PlayerDto owner: players) {
                         if (owner.getPlayerFigure().equals(card.getOwner())) {
@@ -131,11 +135,13 @@ public class ProgressServiceImpl implements ProgressService {
                 //TODO Сделать
                 break;
             case "leavePrisonByCard":
+                //TODO изменить логику меньшения карточек, их может быть несколько у игрока
                 player.setPrisonOutCard(0);
                 servicesManager.getCardsManagerService().comebackPrisonCard();
                 //TODO Получить данные из карточки выхода из тюрьмы для изменения игрока
                 break;
             case "leavePrisonByMoney":
+                //TODO выходит с помощью денег, но зачем-то уменьшается кол-во карточек выхода
                 player.setInPrison(0L);
                 addActionByType(resultAction, "EndTurn");
                 break;
@@ -146,6 +152,8 @@ public class ProgressServiceImpl implements ProgressService {
                 //TODO Проверка на цвет собственности перед продажей
                 break;
             case "MoneyOperation":
+                /*TODO игроков в списке может быть один - денежная операция с банком,
+                   либо два - денежная операция между игроками*/
                 List<?> playersList = objectMapper.convertValue(action.getActionBody().get("player"), List.class);
                 PlayerDto player1 = (PlayerDto) playersList.get(0);
                 PlayerDto player2 = (PlayerDto) playersList.get(1);
@@ -160,6 +168,7 @@ public class ProgressServiceImpl implements ProgressService {
                 addActionByType(resultAction, "EndTurn");
                 break;
             case "Swap":
+                //TODO swap проходит как покупка имущества через RealtyManager
                 List<?> offer1 = objectMapper.convertValue(action.getActionBody().get("offerOnPlayer1"), List.class);
                 List<?> offer2 = objectMapper.convertValue(action.getActionBody().get("offerOnPlayer2"), List.class);
                 if (offer1 != null && offer2 != null) {
@@ -202,6 +211,7 @@ public class ProgressServiceImpl implements ProgressService {
         return null;
     }
 
+    //TODO
     private void generationPossibleActions(
             MapType mapType,
             PlayerDto player,
