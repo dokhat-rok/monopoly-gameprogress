@@ -1,16 +1,16 @@
-package com.vpr.monopoly.gameprogress.service.impl;
+package com.vpr.monopoly.gameprogress.service.monopoly.client;
 
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.RealtyCardDto;
-import com.vpr.monopoly.gameprogress.service.RealtyManagerService;
+import com.vpr.monopoly.gameprogress.service.monopoly.RealtyManagerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class RealtyManagerServiceImpl implements RealtyManagerService {
+public class RealtyManagerClient implements RealtyManagerService {
 
     @Override
     public ActionDto playerToBankInteraction(ActionDto action) {

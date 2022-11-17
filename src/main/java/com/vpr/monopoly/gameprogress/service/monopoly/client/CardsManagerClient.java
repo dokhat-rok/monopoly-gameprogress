@@ -1,7 +1,7 @@
-package com.vpr.monopoly.gameprogress.service.client;
+package com.vpr.monopoly.gameprogress.service.monopoly.client;
 
 import com.vpr.monopoly.gameprogress.model.CardDto;
-import com.vpr.monopoly.gameprogress.service.CardsManagerService;
+import com.vpr.monopoly.gameprogress.service.monopoly.CardsManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
-package com.vpr.monopoly.gameprogress.service.client;
+package com.vpr.monopoly.gameprogress.service.monopoly.client;
 
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
-import com.vpr.monopoly.gameprogress.service.PrisonService;
+import com.vpr.monopoly.gameprogress.service.monopoly.PrisonService;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
 import com.vpr.monopoly.gameprogress.utils.CheckStatusError;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
+import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 @Component
@@ -28,13 +29,18 @@ public class PrisonClient implements PrisonService {
 
     private final ServicesManager servicesManager;
 
+    @PostConstruct
+    private void init(){
+        webClient = WebClient.create(baseUrl);
+    }
+
     @Override
     public PlayerDto imprisonPlayer(PlayerDto player) {
         String uri = "/imprison";
         Optional<PlayerDto> response = webClient
                 .post()
                 .uri(uriBuilder -> uriBuilder.path(uri).build())
-                .body(player, PlayerDto.class)
+                .body(Mono.just(player), PlayerDto.class)
                 .retrieve()
                 .bodyToMono(PlayerDto.class)
                 .retryWhen(Retry.max(4)

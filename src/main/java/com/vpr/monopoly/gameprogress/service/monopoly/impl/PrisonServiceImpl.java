@@ -1,11 +1,11 @@
-package com.vpr.monopoly.gameprogress.service.impl;
+package com.vpr.monopoly.gameprogress.service.monopoly.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
 import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.model.enam.ServiceType;
-import com.vpr.monopoly.gameprogress.service.PrisonService;
+import com.vpr.monopoly.gameprogress.service.monopoly.PrisonService;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.vpr.monopoly.gameprogress.model.enam.ActionType.MoneyOperation;
 
 @Service
 @Slf4j
@@ -40,8 +42,8 @@ public class PrisonServiceImpl implements PrisonService {
     public ActionDto waiting(ActionDto action) {
         log.info("Requesting... to {}", ServiceType.PRISON.getName());
         PlayerDto player = (PlayerDto)action.getActionBody().get("player");
-        switch (ActionType.valueOf(action.getActionType().toUpperCase())){
-            case WAITING:
+        switch (ActionType.valueOf(action.getActionType())){
+            case Waiting:
                 int[] throwDice = player.getLastRoll();
                 if(throwDice[0] == throwDice[1]){
                     player.setInPrison(0L);
@@ -50,12 +52,12 @@ public class PrisonServiceImpl implements PrisonService {
                     player.setInPrison(player.getInPrison() - 1);
                 }
                 break;
-            case lEAVE_PRISON_BY_CARD:
+            case LeavePrisonByCard:
                 player.setPrisonOutCard(player.getPrisonOutCard() - 1);
                 break;
-            case lEAVE_PRISON_BY_MONEY:
+            case LeavePrisonByMoney:
                 ActionDto bankAction = ActionDto.builder()
-                        .actionType(ActionType.MONEY_OPERATION.getLabel())
+                        .actionType(MoneyOperation.toString())
                         .actionBody(Map.of(
                                 "playerList", List.of(player),
                                 "money", -outerCost
@@ -78,15 +80,15 @@ public class PrisonServiceImpl implements PrisonService {
         log.info("Requesting... to {}", ServiceType.PRISON.getName());
         PlayerDto player = (PlayerDto)action.getActionBody().get("player");
         Boolean result = false;
-        switch (ActionType.valueOf(action.getActionType().toUpperCase())){
-            case lEAVE_PRISON_BY_CARD:
+        switch (ActionType.valueOf(action.getActionType())){
+            case LeavePrisonByCard:
                 if(player.getPrisonOutCard() > 0){
                     result = true;
                 }
                 break;
-            case lEAVE_PRISON_BY_MONEY:
+            case LeavePrisonByMoney:
                 ActionDto bankAction = ActionDto.builder()
-                        .actionType(ActionType.MONEY_OPERATION.getLabel())
+                        .actionType(MoneyOperation.toString())
                         .actionBody(Map.of(
                                 "playerList", List.of(player),
                                 "money", -outerCost

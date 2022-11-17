@@ -1,16 +1,18 @@
-package com.vpr.monopoly.gameprogress.service.impl;
+package com.vpr.monopoly.gameprogress.service.monopoly.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
 import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.model.enam.ServiceType;
-import com.vpr.monopoly.gameprogress.service.BankService;
+import com.vpr.monopoly.gameprogress.service.monopoly.BankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.vpr.monopoly.gameprogress.model.enam.ActionType.MoneyOperation;
 
 @Service
 @Slf4j
@@ -24,7 +26,7 @@ public class BankServiceImpl implements BankService {
         log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto result = null;
 
-        if(action.getActionType().equals(ActionType.MONEY_OPERATION.getLabel())){
+        if(action.getActionType().equals(MoneyOperation.toString())){
 
             List<?> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), List.class);
             PlayerDto player = (PlayerDto) playerList.get(0);
@@ -58,7 +60,7 @@ public class BankServiceImpl implements BankService {
         log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto result = null;
 
-        if(action.getActionType().equals(ActionType.MONEY_OPERATION.getLabel())){
+        if(action.getActionType().equals(MoneyOperation.toString())){
 
             List<?> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), List.class);
             PlayerDto player1 = (PlayerDto) playerList.get(0);

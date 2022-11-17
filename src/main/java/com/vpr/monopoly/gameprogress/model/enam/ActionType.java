@@ -23,5 +23,7 @@ public enum ActionType {
 
     MoneyOperation,
 
-    Swap
+    Swap,
+
+    Waiting
 }

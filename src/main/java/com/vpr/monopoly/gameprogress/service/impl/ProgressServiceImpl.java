@@ -35,11 +35,6 @@ public class ProgressServiceImpl implements ProgressService {
     @Value("${progress.round.salary}")
     private Long salary;
 
-    @PostConstruct
-    private void init(){
-        servicesManager.checkConnect();
-    }
-
     @Override
     public StartDataDto startGame(Long count, String[] players) {
         List<PlayerDto> newPlayers = new ArrayList<>();
@@ -58,7 +53,6 @@ public class ProgressServiceImpl implements ProgressService {
                         .players(newPlayers)
                         .realty(realtyCardList)
                         .decks(servicesManager.getCardsManagerService().initializingDecks())
-                        .playersInPrison(new ArrayList<>())
                         .history(new ArrayList<>())
                         .build()
                 );
@@ -120,7 +114,7 @@ public class ProgressServiceImpl implements ProgressService {
 
                 if(player.getInPrison() > 0){
                     ActionDto prisonAction = ActionDto.builder()
-                            .actionType(ActionType.MoneyOperation.toString())
+                            .actionType(Waiting.toString())
                             .actionBody(Map.of(
                                     "player", player
                             ))

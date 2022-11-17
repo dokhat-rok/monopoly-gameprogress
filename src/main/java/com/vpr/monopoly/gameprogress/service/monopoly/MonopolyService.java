@@ -1,4 +1,4 @@
-package com.vpr.monopoly.gameprogress.service;
+package com.vpr.monopoly.gameprogress.service.monopoly;
 
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.utils.CheckStatusError;
@@ -65,7 +65,7 @@ public interface MonopolyService {
                 response = webClient
                         .post()
                         .uri(uriBuilder -> uriBuilder.path(uri).build())
-                        .body(action, ActionDto.class)
+                        .body(Mono.just(action), ActionDto.class)
                         .retrieve()
                         .bodyToMono(Boolean.class)
                         .retryWhen(Retry.max(4)
@@ -80,7 +80,7 @@ public interface MonopolyService {
                 response = webClient
                         .put()
                         .uri(uriBuilder -> uriBuilder.path(uri).build())
-                        .body(action, ActionDto.class)
+                        .body(Mono.just(action), ActionDto.class)
                         .retrieve()
                         .bodyToMono(Boolean.class)
                         .retryWhen(Retry.max(4)

@@ -1,4 +1,4 @@
-package com.vpr.monopoly.gameprogress.service;
+package com.vpr.monopoly.gameprogress.service.monopoly;
 
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.RealtyCardDto;

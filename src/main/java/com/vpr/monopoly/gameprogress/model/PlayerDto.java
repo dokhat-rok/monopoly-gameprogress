@@ -34,6 +34,9 @@ public class PlayerDto implements Serializable {
     @Schema(description = "Список имущества")
     private List<RealtyCardDto> realtyList;
 
+    @Schema(description = "Список полного набора карточек одного цвета")
+    private List<String> monopolies;
+
     @Schema(description = "Наименование фигуры")
     private String playerFigure;
 

@@ -1,9 +1,8 @@
-package com.vpr.monopoly.gameprogress.service.client;
+package com.vpr.monopoly.gameprogress.service.monopoly.client;
 
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
-import com.vpr.monopoly.gameprogress.model.enam.ActionType;
-import com.vpr.monopoly.gameprogress.service.BankService;
+import com.vpr.monopoly.gameprogress.service.monopoly.BankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +14,10 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
+import static com.vpr.monopoly.gameprogress.model.enam.ActionType.MoneyOperation;
+
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class BankClient implements BankService {
 
     @Value("${bank.service.base.url}")
@@ -56,10 +56,11 @@ public class BankClient implements BankService {
 
     @Override
     public Boolean checkConnection() {
+        webClient = WebClient.create(baseUrl);
         List<PlayerDto> playerList = List.of(PlayerDto.builder().build());
         Long money = 100L;
         ActionDto action = ActionDto.builder()
-                .actionType(ActionType.MONEY_OPERATION.getLabel())
+                .actionType(MoneyOperation.toString())
                 .actionBody(Map.of(
                         "playerList", playerList,
                         "money", money

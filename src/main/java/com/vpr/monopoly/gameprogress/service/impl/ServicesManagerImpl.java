@@ -1,19 +1,31 @@
 package com.vpr.monopoly.gameprogress.service.impl;
 
 import com.vpr.monopoly.gameprogress.service.*;
-import com.vpr.monopoly.gameprogress.service.client.BankClient;
-import com.vpr.monopoly.gameprogress.service.client.CardsManagerClient;
-import com.vpr.monopoly.gameprogress.service.client.PrisonClient;
-import com.vpr.monopoly.gameprogress.service.client.RealtyManagerClient;
+import com.vpr.monopoly.gameprogress.service.monopoly.client.BankClient;
+import com.vpr.monopoly.gameprogress.service.monopoly.client.CardsManagerClient;
+import com.vpr.monopoly.gameprogress.service.monopoly.client.PrisonClient;
+import com.vpr.monopoly.gameprogress.service.monopoly.client.RealtyManagerClient;
+import com.vpr.monopoly.gameprogress.service.monopoly.BankService;
+import com.vpr.monopoly.gameprogress.service.monopoly.CardsManagerService;
+import com.vpr.monopoly.gameprogress.service.monopoly.PrisonService;
+import com.vpr.monopoly.gameprogress.service.monopoly.RealtyManagerService;
+import com.vpr.monopoly.gameprogress.service.monopoly.impl.BankServiceImpl;
+import com.vpr.monopoly.gameprogress.service.monopoly.impl.CardsManagerServiceImpl;
+import com.vpr.monopoly.gameprogress.service.monopoly.impl.PrisonServiceImpl;
+import com.vpr.monopoly.gameprogress.service.monopoly.impl.RealtyManagerServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-//TODO сделать класс паттерном - синглтон
+import javax.annotation.PostConstruct;
+
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ServicesManagerImpl implements ServicesManager {
 
-    private BankService bankService;
+    private final BankService bankClient;
 
     private CardsManagerService cardsManagerService;
 
@@ -21,13 +33,18 @@ public class ServicesManagerImpl implements ServicesManager {
 
     private RealtyManagerService realtyManagerService;
 
-    public ServicesManagerImpl(){
+    /*public ServicesManagerImpl(){
+        this.checkConnect();
+    }*/
+
+    @PostConstruct
+    private void init(){
         this.checkConnect();
     }
 
     @Override
     public BankService getBankService() {
-        return bankService;
+        return bankClient;
     }
 
     @Override
@@ -47,7 +64,7 @@ public class ServicesManagerImpl implements ServicesManager {
 
     @Override
     public void checkConnect() {
-        BankService bankService = new BankClient();
+        /*BankService bankService = new BankClient(bankBaseUrl);
         if(!bankService.checkConnection()){
             bankService = new BankServiceImpl();
         }
@@ -69,6 +86,8 @@ public class ServicesManagerImpl implements ServicesManager {
         if(!realtyManagerService.checkConnection()){
             realtyManagerService = new RealtyManagerServiceImpl();
         }
-        this.realtyManagerService = realtyManagerService;
+        this.realtyManagerService = realtyManagerService;*/
+
+        bankClient.checkConnection();
     }
 }
