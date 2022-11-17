@@ -29,7 +29,7 @@ public class ServicesManagerImpl implements ServicesManager {
 
     private CardsManagerService cardsManagerService;
 
-    private PrisonService prisonService;
+    private final PrisonService prisonClient;
 
     private RealtyManagerService realtyManagerService;
 
@@ -54,7 +54,7 @@ public class ServicesManagerImpl implements ServicesManager {
 
     @Override
     public PrisonService getPrisonService() {
-        return prisonService;
+        return prisonClient;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ServicesManagerImpl implements ServicesManager {
             realtyManagerService = new RealtyManagerServiceImpl();
         }
         this.realtyManagerService = realtyManagerService;*/
-
         bankClient.checkConnection();
+        prisonClient.checkConnection();
     }
 }

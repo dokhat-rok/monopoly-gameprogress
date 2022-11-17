@@ -8,6 +8,7 @@ import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.repository.SessionRepository;
 import com.vpr.monopoly.gameprogress.service.ProgressService;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
+import com.vpr.monopoly.gameprogress.utils.ServicesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,14 +21,24 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.vpr.monopoly.gameprogress.model.enam.ActionType.*;
 
 @Service
-@RequiredArgsConstructor
 public class ProgressServiceImpl implements ProgressService {
 
     private final SessionRepository sessionRepository;
 
     private final ServicesManager servicesManager;
 
+
     private final ObjectMapper objectMapper;
+
+    public ProgressServiceImpl(
+            SessionRepository sessionRepository,
+            ServicesUtils servicesUtils,
+            ObjectMapper objectMapper
+    ){
+      this.sessionRepository = sessionRepository;
+      this.objectMapper = objectMapper;
+      this.servicesManager = ServicesUtils.INSTANCE;
+    }
 
     @Value("${progress.start.player.money}")
     private Long money;
@@ -90,7 +101,16 @@ public class ProgressServiceImpl implements ProgressService {
                                     "money", salary
                             ))
                             .build();
-                    bankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
+
+                    //TODO Пример checkConnection()
+                    ActionDto responseBankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
+                    if(responseBankAction == null){
+                        servicesManager.checkConnect();
+                        responseBankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
+                    }
+                    bankAction = responseBankAction;
+                    //TODO Конец примера - выглядит как говно
+
                     List<?> playersList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), List.class);
                     player = (PlayerDto) playersList.get(0);
                     player.setPosition(player.getPosition() % count);

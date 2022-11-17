@@ -2,12 +2,14 @@ package com.vpr.monopoly.gameprogress.service.monopoly;
 
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.utils.CheckStatusError;
+import io.lettuce.core.resource.Delay;
 import org.slf4j.Logger;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.util.Optional;
 
 public interface MonopolyService {
@@ -27,7 +29,7 @@ public interface MonopolyService {
                         .body(action, ActionDto.class)
                         .retrieve()
                         .bodyToMono(ActionDto.class)
-                        .retryWhen(Retry.max(4)
+                        .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
                                 .filter(CheckStatusError::isServerError))
                         .onErrorResume(e -> {
                             log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
@@ -42,7 +44,7 @@ public interface MonopolyService {
                         .body(action, ActionDto.class)
                         .retrieve()
                         .bodyToMono(ActionDto.class)
-                        .retryWhen(Retry.max(4)
+                        .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
                                 .filter(CheckStatusError::isServerError))
                         .onErrorResume(e -> {
                             log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
