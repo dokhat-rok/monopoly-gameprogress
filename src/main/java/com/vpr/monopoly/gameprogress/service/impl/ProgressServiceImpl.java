@@ -21,16 +21,24 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.vpr.monopoly.gameprogress.model.enam.ActionType.*;
 
 @Service
-@RequiredArgsConstructor
 public class ProgressServiceImpl implements ProgressService {
 
     private final SessionRepository sessionRepository;
 
-    //private final ServicesManager servicesManager;
+    private final ServicesManager servicesManager;
 
-    private final ServicesUtils servicesUtils;
 
     private final ObjectMapper objectMapper;
+
+    public ProgressServiceImpl(
+            SessionRepository sessionRepository,
+            ServicesUtils servicesUtils,
+            ObjectMapper objectMapper
+    ){
+      this.sessionRepository = sessionRepository;
+      this.objectMapper = objectMapper;
+      this.servicesManager = ServicesUtils.INSTANCE;
+    }
 
     @Value("${progress.start.player.money}")
     private Long money;
@@ -39,21 +47,6 @@ public class ProgressServiceImpl implements ProgressService {
     private Long salary;
 
     @Override
-    public StartDataDto startGame(Long count, String[] players) {
-        return null;
-    }
-
-    @Override
-    public ActionDto actionPlayer(String sessionToken, ActionDto action) {
-        return null;
-    }
-
-    @Override
-    public List<String> endGame() {
-        return null;
-    }
-
-    /*@Override
     public StartDataDto startGame(Long count, String[] players) {
         List<PlayerDto> newPlayers = new ArrayList<>();
         for (String player: players) {
@@ -108,7 +101,16 @@ public class ProgressServiceImpl implements ProgressService {
                                     "money", salary
                             ))
                             .build();
-                    bankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
+
+                    //TODO Пример checkConnection()
+                    ActionDto responseBankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
+                    if(responseBankAction == null){
+                        servicesManager.checkConnect();
+                        responseBankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
+                    }
+                    bankAction = responseBankAction;
+                    //TODO Конец примера - выглядит как говно
+
                     List<?> playersList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), List.class);
                     player = (PlayerDto) playersList.get(0);
                     player.setPosition(player.getPosition() % count);
@@ -398,5 +400,5 @@ public class ProgressServiceImpl implements ProgressService {
 
         action.setActionType(LeavePrisonByMoney.name());
         if(servicesManager.getPrisonService().isWaiting(action)) resultAction.add(LeavePrisonByMoney.toString());
-    }*/
+    }
 }

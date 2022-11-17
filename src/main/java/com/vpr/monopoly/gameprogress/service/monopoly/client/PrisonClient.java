@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class PrisonClient implements PrisonService {
                 .body(Mono.just(player), PlayerDto.class)
                 .retrieve()
                 .bodyToMono(PlayerDto.class)
-                .retryWhen(Retry.max(4)
+                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
                         .filter(CheckStatusError::isServerError))
                 .onErrorResume(e -> {
                     log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
