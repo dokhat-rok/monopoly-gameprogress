@@ -56,7 +56,6 @@ public class BankClient implements BankService {
 
     @Override
     public Boolean checkConnection() {
-        webClient = WebClient.create(baseUrl);
         List<PlayerDto> playerList = List.of(PlayerDto.builder().build());
         Long money = 100L;
         ActionDto action = ActionDto.builder()

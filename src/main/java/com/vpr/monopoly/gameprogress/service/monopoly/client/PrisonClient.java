@@ -15,7 +15,10 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 import java.util.Optional;
+
+import static com.vpr.monopoly.gameprogress.model.enam.ActionType.MoneyOperation;
 
 @Component
 @Slf4j
@@ -26,8 +29,6 @@ public class PrisonClient implements PrisonService {
     private String baseUrl;
 
     private WebClient webClient;
-
-    private final ServicesManager servicesManager;
 
     @PostConstruct
     private void init(){
@@ -65,5 +66,16 @@ public class PrisonClient implements PrisonService {
     public Boolean isWaiting(ActionDto action) {
         String uri = "/iswaiting";
         return this.connectByIsAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
+    }
+
+    @Override
+    public Boolean checkConnection() {
+        ActionDto action = ActionDto.builder()
+                .actionType(MoneyOperation.toString())
+                .actionBody(Map.of(
+                        "player", PlayerDto.builder().money(1000L).build()
+                ))
+                .build();
+        return this.isWaiting(action);
     }
 }

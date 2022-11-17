@@ -8,6 +8,7 @@ import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.repository.SessionRepository;
 import com.vpr.monopoly.gameprogress.service.ProgressService;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
+import com.vpr.monopoly.gameprogress.utils.ServicesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,9 @@ public class ProgressServiceImpl implements ProgressService {
 
     private final SessionRepository sessionRepository;
 
-    private final ServicesManager servicesManager;
+    //private final ServicesManager servicesManager;
+
+    private final ServicesUtils servicesUtils;
 
     private final ObjectMapper objectMapper;
 
@@ -36,6 +39,21 @@ public class ProgressServiceImpl implements ProgressService {
     private Long salary;
 
     @Override
+    public StartDataDto startGame(Long count, String[] players) {
+        return null;
+    }
+
+    @Override
+    public ActionDto actionPlayer(String sessionToken, ActionDto action) {
+        return null;
+    }
+
+    @Override
+    public List<String> endGame() {
+        return null;
+    }
+
+    /*@Override
     public StartDataDto startGame(Long count, String[] players) {
         List<PlayerDto> newPlayers = new ArrayList<>();
         for (String player: players) {
@@ -380,5 +398,5 @@ public class ProgressServiceImpl implements ProgressService {
 
         action.setActionType(LeavePrisonByMoney.name());
         if(servicesManager.getPrisonService().isWaiting(action)) resultAction.add(LeavePrisonByMoney.toString());
-    }
+    }*/
 }
