@@ -1,5 +1,6 @@
 package com.vpr.monopoly.gameprogress.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 @Schema(description = "Модель карты имущества")
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -20,7 +22,7 @@ public class RealtyCardDto implements Serializable {
     private int position;
 
     @Schema(description = "Название улицы")
-    private String streetName;
+    private String cardName;
 
     @Schema(description = "Владелец карты")
     private String owner;
@@ -32,7 +34,7 @@ public class RealtyCardDto implements Serializable {
     private Long costCard;
 
     @Schema(description = "Стоимость дома")
-    private String costHouse;
+    private Long costHouse;
 
     @Schema(description = "Текущее количество домов")
     private Long countHouse;

@@ -3,7 +3,6 @@ package com.vpr.monopoly.gameprogress.service.monopoly.client;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
 import com.vpr.monopoly.gameprogress.service.monopoly.BankService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;

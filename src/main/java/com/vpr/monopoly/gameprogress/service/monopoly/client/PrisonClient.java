@@ -23,7 +23,6 @@ import static com.vpr.monopoly.gameprogress.model.enam.ActionType.MoneyOperation
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class PrisonClient implements PrisonService {
 
     @Value("${prison.service.base.url}")
@@ -77,6 +76,6 @@ public class PrisonClient implements PrisonService {
                         "player", PlayerDto.builder().money(1000L).build()
                 ))
                 .build();
-        return this.isWaiting(action);
+        return this.isWaiting(action) != null;
     }
 }
