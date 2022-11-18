@@ -1,9 +1,11 @@
 package com.vpr.monopoly.gameprogress.data;
 
 import com.vpr.monopoly.gameprogress.data.enam.MapType;
+import com.vpr.monopoly.gameprogress.model.RealtyCardDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Schema(description = "Карта игры")
@@ -56,5 +58,20 @@ public class MonopolyMap {
 
     public static MapType getTypeByCellNumber(int number) {
         return data.get(number);
+    }
+
+    public static Map<String, Integer> getColorsRealty(List<RealtyCardDto> realty) {
+        Map<String, Integer> colorsRealty = new HashMap<>();
+        for (RealtyCardDto realtyCard: realty) {
+            if (!colorsRealty.containsKey(realtyCard.getColor())) {
+                colorsRealty.put(realtyCard.getColor(), 1);
+            }
+            else {
+                int count = colorsRealty.get(realtyCard.getColor()) + 1;
+                colorsRealty.put(realtyCard.getColor(), count);
+            }
+        }
+
+        return colorsRealty;
     }
 }

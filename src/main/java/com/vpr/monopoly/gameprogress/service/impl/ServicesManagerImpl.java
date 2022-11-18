@@ -1,41 +1,45 @@
 package com.vpr.monopoly.gameprogress.service.impl;
 
 import com.vpr.monopoly.gameprogress.service.*;
-import com.vpr.monopoly.gameprogress.service.monopoly.client.BankClient;
-import com.vpr.monopoly.gameprogress.service.monopoly.client.CardsManagerClient;
-import com.vpr.monopoly.gameprogress.service.monopoly.client.PrisonClient;
-import com.vpr.monopoly.gameprogress.service.monopoly.client.RealtyManagerClient;
 import com.vpr.monopoly.gameprogress.service.monopoly.BankService;
 import com.vpr.monopoly.gameprogress.service.monopoly.CardsManagerService;
 import com.vpr.monopoly.gameprogress.service.monopoly.PrisonService;
 import com.vpr.monopoly.gameprogress.service.monopoly.RealtyManagerService;
-import com.vpr.monopoly.gameprogress.service.monopoly.impl.BankServiceImpl;
-import com.vpr.monopoly.gameprogress.service.monopoly.impl.CardsManagerServiceImpl;
-import com.vpr.monopoly.gameprogress.service.monopoly.impl.PrisonServiceImpl;
-import com.vpr.monopoly.gameprogress.service.monopoly.impl.RealtyManagerServiceImpl;
+import com.vpr.monopoly.gameprogress.service.monopoly.client.PrisonClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class ServicesManagerImpl implements ServicesManager {
+
+    private boolean bankEnabled = true;
+
+    private boolean prisonEnabled = true;
+
+    private boolean realtyEnabled = true;
+
+    private boolean cardsEnabled = true;
 
     private final BankService bankClient;
 
-    private CardsManagerService cardsManagerService;
+    private final PrisonClient prisonClient;
 
-    private final PrisonService prisonClient;
+    private final RealtyManagerService realtyManagerClient;
 
-    private RealtyManagerService realtyManagerService;
+    private final CardsManagerService cardsManagerClient;
 
-    /*public ServicesManagerImpl(){
-        this.checkConnect();
-    }*/
+    private final BankService bankServiceImpl;
+
+    private final PrisonService prisonServiceImpl;
+
+    private final RealtyManagerService realtyManagerServiceImpl;
+
+    private final CardsManagerService cardsManagerServiceImpl;
 
     @PostConstruct
     private void init(){
@@ -44,50 +48,50 @@ public class ServicesManagerImpl implements ServicesManager {
 
     @Override
     public BankService getBankService() {
-        return bankClient;
+        return bankEnabled ? bankClient : bankServiceImpl;
     }
 
     @Override
     public CardsManagerService getCardsManagerService() {
-        return cardsManagerService;
+        return cardsEnabled ? cardsManagerClient : cardsManagerServiceImpl;
     }
 
     @Override
     public PrisonService getPrisonService() {
-        return prisonClient;
+        return prisonEnabled ? prisonClient : prisonServiceImpl;
     }
 
     @Override
     public RealtyManagerService getRealtyManagerService() {
-        return realtyManagerService;
+        return realtyEnabled ? realtyManagerClient : realtyManagerServiceImpl;
     }
 
     @Override
     public void checkConnect() {
-        /*BankService bankService = new BankClient(bankBaseUrl);
-        if(!bankService.checkConnection()){
-            bankService = new BankServiceImpl();
-        }
-        this.bankService = bankService;
+        boolean bankEnabled = true;
+        boolean prisonEnabled = true;
+        boolean realtyEnabled = true;
+        boolean cardsEnabled = true;
 
-        CardsManagerService cardsManagerService = new CardsManagerClient();
-        if (!cardsManagerService.checkConnection()){
-            cardsManagerService = new CardsManagerServiceImpl();
+        if(!bankClient.checkConnection()){
+            bankEnabled = false;
         }
-        this.cardsManagerService = cardsManagerService;
 
-        PrisonService prisonService = new PrisonClient(this);
-        if(!prisonService.checkConnection()){
-            prisonService = new PrisonServiceImpl(this);
+        if(!prisonClient.checkConnection()){
+            prisonEnabled = false;
         }
-        this.prisonService = prisonService;
 
-        RealtyManagerService realtyManagerService = new RealtyManagerClient();
-        if(!realtyManagerService.checkConnection()){
-            realtyManagerService = new RealtyManagerServiceImpl();
+        if(!realtyManagerClient.checkConnection()){
+            realtyEnabled = false;
         }
-        this.realtyManagerService = realtyManagerService;*/
-        bankClient.checkConnection();
-        prisonClient.checkConnection();
+
+        if(!cardsManagerClient.checkConnection()){
+            cardsEnabled = false;
+        }
+
+        this.bankEnabled = bankEnabled;
+        this.prisonEnabled = prisonEnabled;
+        this.realtyEnabled = realtyEnabled;
+        this.cardsEnabled = cardsEnabled;
     }
 }
