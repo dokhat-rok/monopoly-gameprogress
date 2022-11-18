@@ -25,6 +25,9 @@ public class SessionDto implements Serializable {
     @Schema(description = "Список карточек имущества")
     private List<RealtyCardDto> realty;
 
+    @Schema(description = "Количество карт имущества с определенным цветом")
+    private Map<String, Integer> realtyColors;
+
     @Schema(description = "Колоды")
     private Map<String, List<CardDto>> decks;
 
