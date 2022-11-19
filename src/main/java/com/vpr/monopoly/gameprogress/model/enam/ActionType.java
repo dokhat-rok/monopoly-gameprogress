@@ -25,5 +25,7 @@ public enum ActionType {
 
     Swap,
 
-    Waiting
+    Waiting,
+
+    GiveUp
 }

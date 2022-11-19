@@ -11,7 +11,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-@Schema(description = "Активная сессия с текущими данными этой игры")
+
+/**
+ * Активная сессия с текущими данными этой игры
+ */
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -19,18 +22,28 @@ import java.util.Map;
 @RedisHash("SESSION")
 public class SessionDto implements Serializable {
 
-    @Schema(description = "Список игроков на поле")
+    /**
+     * Список игроков на поле
+     */
     private List<PlayerDto> players;
 
-    @Schema(description = "Список карточек имущества")
+    /**
+     * Список карточек имущества
+     */
     private List<RealtyCardDto> realty;
 
-    @Schema(description = "Количество карт имущества с определенным цветом")
+    /**
+     * Количество карт имущества с определенным цветом
+     */
     private Map<String, Integer> realtyColors;
 
-    @Schema(description = "Колоды")
+    /**
+     * Колоды
+     */
     private Map<String, List<CardDto>> decks;
 
-    @Schema(description = "История хода игры")
+    /**
+     * История хода игры
+     */
     private List<String> history;
 }

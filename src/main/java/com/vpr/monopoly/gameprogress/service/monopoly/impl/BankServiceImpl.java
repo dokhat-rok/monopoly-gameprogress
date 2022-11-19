@@ -1,9 +1,9 @@
 package com.vpr.monopoly.gameprogress.service.monopoly.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
-import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.model.enam.ServiceType;
 import com.vpr.monopoly.gameprogress.service.monopoly.BankService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,8 @@ public class BankServiceImpl implements BankService {
 
         if(action.getActionType().equals(MoneyOperation.toString())){
 
-            List<?> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), List.class);
-            PlayerDto player = (PlayerDto) playerList.get(0);
+            List<PlayerDto> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
+            PlayerDto player = playerList.get(0);
             Long money = (Long) action.getActionBody().get("money");
 
             player.setMoney(player.getMoney() + money);
@@ -47,8 +47,8 @@ public class BankServiceImpl implements BankService {
         log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto resultAction = this.playerToBankInteraction(action);
 
-        List<?> playerList = objectMapper.convertValue(resultAction.getActionBody().get("playerList"), List.class);
-        PlayerDto player = (PlayerDto) playerList.get(0);
+        List<PlayerDto> playerList = objectMapper.convertValue(resultAction.getActionBody().get("playerList"), new TypeReference<>() {});
+        PlayerDto player = playerList.get(0);
         Boolean result = player.getMoney() >= 0;
 
         log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);
@@ -62,9 +62,9 @@ public class BankServiceImpl implements BankService {
 
         if(action.getActionType().equals(MoneyOperation.toString())){
 
-            List<?> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), List.class);
-            PlayerDto player1 = (PlayerDto) playerList.get(0);
-            PlayerDto player2 = (PlayerDto) playerList.get(1);
+            List<PlayerDto> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
+            PlayerDto player1 = playerList.get(0);
+            PlayerDto player2 = playerList.get(1);
             Long money = (Long) action.getActionBody().get("money");
 
             player1.setMoney(player1.getMoney() + money);
@@ -82,9 +82,9 @@ public class BankServiceImpl implements BankService {
         log.info("Requesting... to {}", ServiceType.BANK.getName());
         ActionDto resultAction = this.playerToPlayerInteraction(action);
 
-        List<?> playerList = objectMapper.convertValue(resultAction.getActionBody().get("playerList"), List.class);
-        PlayerDto player1 = (PlayerDto) playerList.get(0);
-        PlayerDto player2 = (PlayerDto) playerList.get(1);
+        List<PlayerDto> playerList = objectMapper.convertValue(resultAction.getActionBody().get("playerList"), new TypeReference<>() {});
+        PlayerDto player1 = playerList.get(0);
+        PlayerDto player2 = playerList.get(1);
         Boolean result = player1.getMoney() >= 0 && player2.getMoney() >= 0;
 
         log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);

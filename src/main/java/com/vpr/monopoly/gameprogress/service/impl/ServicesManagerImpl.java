@@ -6,6 +6,8 @@ import com.vpr.monopoly.gameprogress.service.monopoly.CardsManagerService;
 import com.vpr.monopoly.gameprogress.service.monopoly.PrisonService;
 import com.vpr.monopoly.gameprogress.service.monopoly.RealtyManagerService;
 import com.vpr.monopoly.gameprogress.service.monopoly.client.PrisonClient;
+import com.vpr.monopoly.gameprogress.service.monopoly.impl.PrisonServiceImpl;
+import com.vpr.monopoly.gameprogress.service.monopoly.impl.RealtyManagerServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,10 @@ public class ServicesManagerImpl implements ServicesManager {
 
     @PostConstruct
     private void init(){
+        PrisonServiceImpl prisonService = (PrisonServiceImpl) this.prisonServiceImpl;
+        prisonService.setServicesManager(this);
+        RealtyManagerServiceImpl realtyManagerService = (RealtyManagerServiceImpl) this.realtyManagerServiceImpl;
+        realtyManagerService.setServicesManager(this);
         this.checkConnect();
     }
 

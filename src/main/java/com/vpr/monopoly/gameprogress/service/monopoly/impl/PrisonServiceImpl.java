@@ -1,5 +1,6 @@
 package com.vpr.monopoly.gameprogress.service.monopoly.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +31,8 @@ public class PrisonServiceImpl implements PrisonService {
     @Value("${prison.service.outer-cost}")
     private Long outerCost;
 
-    private final ServicesManager servicesManager = ServicesUtils.INSTANCE;
+    private ServicesManager servicesManager = ServicesUtils.INSTANCE;
+    private final ObjectMapper objectMapper;
 
     @Override
     public PlayerDto imprisonPlayer(PlayerDto player) {
@@ -42,7 +45,7 @@ public class PrisonServiceImpl implements PrisonService {
     @Override
     public ActionDto waiting(ActionDto action) {
         log.info("Requesting... to {}", ServiceType.PRISON.getName());
-        PlayerDto player = (PlayerDto)action.getActionBody().get("player");
+        PlayerDto player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
         switch (ActionType.valueOf(action.getActionType())){
             case Waiting:
                 int[] throwDice = player.getLastRoll();
@@ -59,16 +62,16 @@ public class PrisonServiceImpl implements PrisonService {
             case LeavePrisonByMoney:
                 ActionDto bankAction = ActionDto.builder()
                         .actionType(MoneyOperation.toString())
-                        .actionBody(Map.of(
+                        .actionBody(new HashMap<>(Map.of(
                                 "playerList", List.of(player),
                                 "money", -outerCost
-                        ))
+                        )))
                         .build();
                 bankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
                 ObjectMapper objectMapper = new ObjectMapper();
-                player = (PlayerDto) objectMapper
-                        .convertValue(bankAction.getActionBody().get("playerList"), List.class)
-                        .get(0);
+                List<PlayerDto> playerList = objectMapper
+                        .convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
+                player = playerList.get(0);
                 break;
         }
         action.getActionBody().put("player", player);
@@ -79,7 +82,7 @@ public class PrisonServiceImpl implements PrisonService {
     @Override
     public Boolean isWaiting(ActionDto action) {
         log.info("Requesting... to {}", ServiceType.PRISON.getName());
-        PlayerDto player = (PlayerDto)action.getActionBody().get("player");
+        PlayerDto player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
         Boolean result = false;
         switch (ActionType.valueOf(action.getActionType())){
             case LeavePrisonByCard:
@@ -90,15 +93,19 @@ public class PrisonServiceImpl implements PrisonService {
             case LeavePrisonByMoney:
                 ActionDto bankAction = ActionDto.builder()
                         .actionType(MoneyOperation.toString())
-                        .actionBody(Map.of(
+                        .actionBody(new HashMap<>(Map.of(
                                 "playerList", List.of(player),
                                 "money", -outerCost
-                        ))
+                        )))
                         .build();
                 result = servicesManager.getBankService().isPlayerToBankInteraction(bankAction);
                 break;
         }
         log.info("Response {} ==> {}", ServiceType.PRISON.getName(), result);
         return result;
+    }
+
+    public void setServicesManager(ServicesManager servicesManager){
+        this.servicesManager = servicesManager;
     }
 }

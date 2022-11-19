@@ -1,5 +1,6 @@
 package com.vpr.monopoly.gameprogress.service.monopoly.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vpr.monopoly.gameprogress.data.MonopolyMap;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +28,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
 
     private final ObjectMapper objectMapper;
 
-    private final ServicesManager servicesManager;
+    private ServicesManager servicesManager;
 
     public RealtyManagerServiceImpl(ObjectMapper objectMapper){
         this.objectMapper = objectMapper;
@@ -36,12 +38,12 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
     @Override
     public ActionDto playerToBankInteraction(ActionDto action) {
         log.info("Requesting... to {}", REALTY_MANAGER.getName());
-        PlayerDto player = (PlayerDto) action.getActionBody().get("player");
-        RealtyCardDto realtyCard = (RealtyCardDto) action.getActionBody().get("realtyCard");
+        PlayerDto player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
+        RealtyCardDto realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
         switch (ActionType.valueOf(action.getActionType())){
             case BuyRealty:
                 Long money = realtyCard.getCostCard();
-                if(realtyCard.getOwner().equals(player.getPlayerFigure())){
+                if(player.getPlayerFigure().equals(realtyCard.getOwner())){
                     money /= 2;
                 }
                 else if(realtyCard.getOwner() != null){
@@ -50,33 +52,33 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 ActionDto bankAction = servicesManager.getBankService().playerToBankInteraction(
                         ActionDto.builder()
                                 .actionType(MoneyOperation.toString())
-                                .actionBody(Map.of(
+                                .actionBody(new HashMap<>(Map.of(
                                         "playerList", List.of(player),
                                         "money", -money
-                                ))
+                                )))
                                 .build()
                 );
-                List<?> playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), List.class);
-                player = (PlayerDto) playerList.get(0);
+                List<PlayerDto> playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
+                player = playerList.get(0);
                 realtyCard.setOwner(player.getPlayerFigure());
                 realtyCard.setCountHouse(0L);
                 player.getRealtyList().add(realtyCard);
                 break;
             case SellRealty:
-                if(!realtyCard.getOwner().equals(player.getPlayerFigure())){
+                if(!player.getPlayerFigure().equals(realtyCard.getOwner())){
                     return action;
                 }
                 bankAction = servicesManager.getBankService().playerToBankInteraction(
                         ActionDto.builder()
                                 .actionType(MoneyOperation.toString())
-                                .actionBody(Map.of(
+                                .actionBody(new HashMap<>(Map.of(
                                         "playerList", List.of(player),
                                         "money", -realtyCard.getCostCard() / 2
-                                ))
+                                )))
                                 .build()
                 );
-                playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), List.class);
-                player = (PlayerDto) playerList.get(0);
+                playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
+                player = playerList.get(0);
                 realtyCard.setOwner(player.getPlayerFigure());
                 realtyCard.setCountHouse(-1L);
                 player.getRealtyList().remove(realtyCard);
@@ -99,14 +101,14 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 bankAction = servicesManager.getBankService().playerToBankInteraction(
                         ActionDto.builder()
                                 .actionType(MoneyOperation.toString())
-                                .actionBody(Map.of(
+                                .actionBody(new HashMap<>(Map.of(
                                         "playerList", List.of(player),
                                         "money", -realtyCard.getCostHouse()
-                                ))
+                                )))
                                 .build()
                 );
-                playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), List.class);
-                player = (PlayerDto) playerList.get(0);
+                playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
+                player = playerList.get(0);
                 player.getRealtyList().remove(realtyCard);
                 realtyCard.setCountHouse(realtyCard.getCountHouse() + 1);
                 player.getRealtyList().add(realtyCard);
@@ -117,14 +119,14 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 bankAction = servicesManager.getBankService().playerToBankInteraction(
                         ActionDto.builder()
                                 .actionType(MoneyOperation.toString())
-                                .actionBody(Map.of(
+                                .actionBody(new HashMap<>(Map.of(
                                         "playerList", List.of(player),
                                         "money", realtyCard.getCostHouse() / 2
-                                ))
+                                )))
                                 .build()
                 );
-                playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), List.class);
-                player = (PlayerDto) playerList.get(0);
+                playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
+                player = playerList.get(0);
                 player.getRealtyList().remove(realtyCard);
                 realtyCard.setCountHouse(realtyCard.getCountHouse() - 1);
                 player.getRealtyList().add(realtyCard);
@@ -133,20 +135,20 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
         this.checkMonopolies(player);
         ActionDto result = ActionDto.builder()
                 .actionType(action.getActionType())
-                .actionBody(Map.of(
+                .actionBody(new HashMap<>(Map.of(
                         "player", player
-                ))
+                )))
                 .build();
         log.info("Response {} ==> {}", REALTY_MANAGER.getName(), result);
-        return action;
+        return result;
     }
 
     @Override
     public Boolean isPlayerToBankInteraction(ActionDto action) {
         log.info("Requesting... to {}", REALTY_MANAGER.getName());
-        RealtyCardDto realtyCard = (RealtyCardDto) action.getActionBody().get("realtyCard");
+        RealtyCardDto realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
         action = this.playerToBankInteraction(action);
-        PlayerDto changesPlayer = (PlayerDto) action.getActionBody().get("player");
+        PlayerDto changesPlayer = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
         Boolean result = !changesPlayer.getRealtyList().remove(realtyCard);
         log.info("Response {} ==> {}", REALTY_MANAGER.getName(), result);
         return result;
@@ -158,25 +160,25 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
         if(!action.getActionType().equals(Swap.toString())){
             return action;
         }
-        PlayerDto player1 = (PlayerDto) action.getActionBody().get("player1");
-        PlayerDto player2 = (PlayerDto) action.getActionBody().get("player2");
-        List<?> offer1 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer1"), List.class);
-        List<?> offer2 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer2"), List.class);
+        PlayerDto player1 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
+        PlayerDto player2 = objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
+        List<RealtyCardDto> offer1 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer1"), new TypeReference<>() {});
+        List<RealtyCardDto> offer2 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer2"), new TypeReference<>() {});
         Long money = (Long) action.getActionBody().get("money");
-        for(Object realtyCard : offer1){
-            player1.getRealtyList().remove((RealtyCardDto) realtyCard);
-            player2.getRealtyList().add((RealtyCardDto) realtyCard);
+        for(RealtyCardDto realtyCard : offer1){
+            player1.getRealtyList().remove(realtyCard);
+            player2.getRealtyList().add(realtyCard);
         }
-        for(Object realtyCard : offer2){
-            player2.getRealtyList().remove((RealtyCardDto) realtyCard);
-            player1.getRealtyList().add((RealtyCardDto) realtyCard);
+        for(RealtyCardDto realtyCard : offer2){
+            player2.getRealtyList().remove(realtyCard);
+            player1.getRealtyList().add(realtyCard);
         }
         ActionDto bankAction = servicesManager.getBankService().playerToPlayerInteraction(ActionDto.builder()
                 .actionType(MoneyOperation.toString())
-                .actionBody(Map.of(
+                .actionBody(new HashMap<>(Map.of(
                         "playerList", List.of(player1, player2),
                         "money", money
-                ))
+                )))
                 .build()
         );
         ActionDto result = ActionDto.builder()
@@ -190,16 +192,16 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
     @Override
     public Boolean isPlayerToPlayerInteraction(ActionDto action) {
         log.info("Requesting... to {}", REALTY_MANAGER.getName());
-        PlayerDto player1 = (PlayerDto) action.getActionBody().get("player1");
-        PlayerDto player2 = (PlayerDto) action.getActionBody().get("player2");
-        List<?> offer1 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer1"), List.class);
-        List<?> offer2 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer2"), List.class);
+        PlayerDto player1 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
+        PlayerDto player2 = objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
+        List<RealtyCardDto> offer1 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer1"), new TypeReference<>() {});
+        List<RealtyCardDto> offer2 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer2"), new TypeReference<>() {});
         Long money = (Long) action.getActionBody().get("money");
 
         action = this.playerToPlayerInteraction(action);
 
-        PlayerDto changesPlayer1 = (PlayerDto) action.getActionBody().get("player1");
-        PlayerDto changesPlayer2 = (PlayerDto) action.getActionBody().get("player2");
+        PlayerDto changesPlayer1 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
+        PlayerDto changesPlayer2 = objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
 
         if(!action.getActionType().equals(Swap.toString())){
             return false;
@@ -721,5 +723,9 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
             }
         }
         player.setMonopolies(monopolies);
+    }
+
+    public void setServicesManager(ServicesManager servicesManager){
+        this.servicesManager = servicesManager;
     }
 }
