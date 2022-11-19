@@ -8,7 +8,6 @@ import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.model.enam.ServiceType;
 import com.vpr.monopoly.gameprogress.service.monopoly.PrisonService;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
-import com.vpr.monopoly.gameprogress.utils.ServicesUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +30,7 @@ public class PrisonServiceImpl implements PrisonService {
     @Value("${prison.service.outer-cost}")
     private Long outerCost;
 
-    private ServicesManager servicesManager = ServicesUtils.INSTANCE;
+    private ServicesManager servicesManager;
     private final ObjectMapper objectMapper;
 
     @Override

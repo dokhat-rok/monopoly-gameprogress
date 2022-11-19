@@ -9,7 +9,7 @@ import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.repository.SessionRepository;
 import com.vpr.monopoly.gameprogress.service.ProgressService;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
-import com.vpr.monopoly.gameprogress.utils.ServicesUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.vpr.monopoly.gameprogress.model.enam.ActionType.*;
 
 @Service
+@RequiredArgsConstructor
 public class ProgressServiceImpl implements ProgressService {
 
     private final SessionRepository sessionRepository;
@@ -28,14 +29,14 @@ public class ProgressServiceImpl implements ProgressService {
 
     private final ObjectMapper objectMapper;
 
-    public ProgressServiceImpl(
+    /*public ProgressServiceImpl(
             SessionRepository sessionRepository,
             ServicesUtils servicesUtils
     ){
       this.sessionRepository = sessionRepository;
       this.objectMapper = new ObjectMapper();
       this.servicesManager = ServicesUtils.INSTANCE;
-    }
+    }*/
 
     @Value("${progress.start.player.money}")
     private Long money;

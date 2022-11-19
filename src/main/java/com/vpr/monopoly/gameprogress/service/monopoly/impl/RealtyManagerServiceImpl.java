@@ -9,7 +9,7 @@ import com.vpr.monopoly.gameprogress.model.RealtyCardDto;
 import com.vpr.monopoly.gameprogress.model.enam.ActionType;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
 import com.vpr.monopoly.gameprogress.service.monopoly.RealtyManagerService;
-import com.vpr.monopoly.gameprogress.utils.ServicesUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +23,13 @@ import static com.vpr.monopoly.gameprogress.model.enam.ActionType.Swap;
 import static com.vpr.monopoly.gameprogress.model.enam.ServiceType.REALTY_MANAGER;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class RealtyManagerServiceImpl implements RealtyManagerService {
 
     private final ObjectMapper objectMapper;
 
     private ServicesManager servicesManager;
-
-    public RealtyManagerServiceImpl(ObjectMapper objectMapper){
-        this.objectMapper = objectMapper;
-        servicesManager = ServicesUtils.INSTANCE;
-    }
 
     @Override
     public ActionDto playerToBankInteraction(ActionDto action) {
