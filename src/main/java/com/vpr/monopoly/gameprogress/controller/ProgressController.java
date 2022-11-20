@@ -12,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Min;
-
-
+import javax.validation.constraints.Size;
 import java.util.List;
 
 import static com.vpr.monopoly.gameprogress.config.OpenApiConfig.PROGRESS;
@@ -30,13 +28,12 @@ public class ProgressController {
     private final ProgressService progressService;
 
     @Operation(summary = "Запрос начальных данных для начала игровой сессии")
-    @PostMapping("/start/{count}")
+    @PostMapping("/start")
     public ResponseEntity<StartDataDto> startGame(
-            @PathVariable @Min(2) @Parameter(description = "Количество игроков", example = "2") Long count,
-            @RequestBody String[] playerFigures
+            @Size(min = 2, max = 8) @RequestBody String[] playerFigures
     ){
-        StartDataDto startData = progressService.startGame(count, playerFigures);
-        log.info("Create {} players with figures {}", count, playerFigures);
+        StartDataDto startData = progressService.startGame(playerFigures);
+        log.info("Create {} players with figures {}",playerFigures.length, playerFigures);
         return ResponseEntity.ok(startData);
     }
 

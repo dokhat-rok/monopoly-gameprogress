@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProgressService {
 
-    StartDataDto startGame(Long count, String[] players);
+    StartDataDto startGame(String[] players);
 
     ActionDto actionPlayer(String sessionToken, ActionDto action);
 

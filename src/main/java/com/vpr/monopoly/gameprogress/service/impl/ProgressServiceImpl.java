@@ -29,15 +29,6 @@ public class ProgressServiceImpl implements ProgressService {
 
     private final ObjectMapper objectMapper;
 
-    /*public ProgressServiceImpl(
-            SessionRepository sessionRepository,
-            ServicesUtils servicesUtils
-    ){
-      this.sessionRepository = sessionRepository;
-      this.objectMapper = new ObjectMapper();
-      this.servicesManager = ServicesUtils.INSTANCE;
-    }*/
-
     @Value("${progress.start.player.money}")
     private Long money;
 
@@ -51,7 +42,7 @@ public class ProgressServiceImpl implements ProgressService {
     private String station;
 
     @Override
-    public StartDataDto startGame(Long count, String[] players) {
+    public StartDataDto startGame(String[] players) {
         List<PlayerDto> newPlayers = new ArrayList<>();
         for (String player: players) {
             newPlayers.add(PlayerDto.builder()
@@ -63,6 +54,7 @@ public class ProgressServiceImpl implements ProgressService {
                     .build());
         }
 
+        Collections.shuffle(newPlayers);
         String token = LocalDateTime.now().toString();
         List<RealtyCardDto> realtyCardList = servicesManager.getRealtyManagerService().getAllRealtyCards();
         realtyCardList.sort(Comparator.comparing(RealtyCardDto::getPosition));
@@ -147,7 +139,9 @@ public class ProgressServiceImpl implements ProgressService {
                 resultActions.add(EndTurn.toString());
                 break;
             case EndTurn:
-                players.add(players.remove(0));
+                player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
+                players.remove(0);
+                players.add(player);
                 resultBody.put("nextPlayer", players.get(0));
                 resultActions.add(DropDice.toString());
                 break;
