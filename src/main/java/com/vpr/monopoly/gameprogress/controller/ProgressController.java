@@ -49,9 +49,11 @@ public class ProgressController {
     }
 
     @Operation(summary = "Окончание игровой сессии и получение истории хода игры")
-    @GetMapping("/endgame")
-    public ResponseEntity<List<String>> endGame(){
-        List<String> history = progressService.endGame();
+    @GetMapping("/endgame/{token}")
+    public ResponseEntity<List<String>> endGame(
+            @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken
+    ){
+        List<String> history = progressService.endGame(sessionToken);
         log.info("End game");
         return ResponseEntity.ok(history);
     }
