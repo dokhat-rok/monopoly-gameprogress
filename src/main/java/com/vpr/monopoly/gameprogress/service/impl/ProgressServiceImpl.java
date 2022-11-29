@@ -120,6 +120,9 @@ public class ProgressServiceImpl implements ProgressService {
                     if (player.getCredit() != 0) {
                         blockedActions.add(DropDice.toString());
                     }
+                    else {
+                        currentActions.add(DropDice.toString());
+                    }
                 }
                 else {
                     player.setCountDouble(0);
@@ -196,12 +199,9 @@ public class ProgressServiceImpl implements ProgressService {
             case MoneyOperation:
                 List<PlayerDto> playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
 
-                if (playersList.size() == 1) {
-                    action = servicesManager.getBankService().playerToBankInteraction(action);
-                }
-                else {
-                    action = servicesManager.getBankService().playerToPlayerInteraction(action);
-                }
+                action = playersList.size() != 1 ?
+                        servicesManager.getBankService().playerToPlayerInteraction(action) :
+                        servicesManager.getBankService().playerToBankInteraction(action);
 
                 currentActions.remove(MoneyOperation.toString());
                 player.setCredit(0L);
@@ -288,21 +288,26 @@ public class ProgressServiceImpl implements ProgressService {
     }
 
     private void checkCredit(PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
-        if (player.getCredit() != 0 && currentActions.contains(MoneyOperation.toString())) {
-            blockedActions.add(MoneyOperation.toString());
-            currentActions.remove(MoneyOperation.toString());
+        if (blockedActions.contains(MoneyOperation.toString()) && player.getMoney() >= player.getCredit()) {
+            if (player.getMoney() >= player.getCredit()) {
+                currentActions.add(MoneyOperation.toString());
+                currentActions.remove(MoneyOperation.toString());
+            }
         }
         else {
             currentActions.addAll(blockedActions);
             blockedActions.clear();
         }
-        if (
-                blockedActions.contains(MoneyOperation.toString()) &&
-                blockedActions.contains(EndTurn.toString()) &&
-                player.getMoney() >= player.getCredit()
-        ) {
-            currentActions.add(MoneyOperation.toString());
-            blockedActions.remove(MoneyOperation.toString());
+
+        if (currentActions.contains(MoneyOperation.toString()) || blockedActions.contains(MoneyOperation.toString())) {
+            if (currentActions.contains(DropDice.toString())) {
+                blockedActions.add(DropDice.toString());
+                currentActions.remove(DropDice.toString());
+            }
+            else if (currentActions.contains(EndTurn.toString())) {
+                blockedActions.add(EndTurn.toString());
+                currentActions.remove(EndTurn.toString());
+            }
         }
     }
 
@@ -414,11 +419,11 @@ public class ProgressServiceImpl implements ProgressService {
                 }
                 break;
             case Swap:
-                playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
+                PlayerDto player2 = objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
                 history.add(
                         "Игрок " + player.getPlayerFigure() +
                         " выполнил действие " + action.getActionType() +
-                        " и обменялся с игроком " + playersList.get(1)
+                        " и обменялся с игроком " + player2
                 );
                 break;
             case EndTurn:
@@ -482,13 +487,7 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSellHouse(player, currentActions);
                 break;
             case PAY_CELL:
-                long money;
-                if (player.getPosition() == 4) {
-                    money = income;
-                }
-                else {
-                    money = luxury;
-                }
+                long money = player.getPosition() == 4 ? income : luxury;
                 ActionDto action = ActionDto.builder()
                         .actionType(MoneyOperation.toString())
                         .actionBody(new HashMap<>(Map.of(
@@ -496,11 +495,12 @@ public class ProgressServiceImpl implements ProgressService {
                                 "money", money
                         )))
                         .build();
+
+                player.setCredit(player.getCredit() + money);
                 if (servicesManager.getBankService().isPlayerToBankInteraction(action)) {
                     currentActions.add(MoneyOperation.toString());
                 }
                 else {
-                    player.setCredit(player.getCredit() + money);
                     blockedActions.add(MoneyOperation.toString());
                 }
 
@@ -563,6 +563,7 @@ public class ProgressServiceImpl implements ProgressService {
             currentActions.add(MoneyOperation.toString());
         }
         else {
+            player.setCredit(player.getCredit() + card.getCostCard());
             blockedActions.add(MoneyOperation.toString());
         }
     }
