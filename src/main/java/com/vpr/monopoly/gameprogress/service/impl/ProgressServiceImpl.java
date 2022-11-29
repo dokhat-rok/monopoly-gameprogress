@@ -41,6 +41,12 @@ public class ProgressServiceImpl implements ProgressService {
     @Value("${progress.station.name}")
     private String station;
 
+    @Value("${progress.income.money}")
+    private Long income;
+
+    @Value("${progress.luxury.money}")
+    private Long luxury;
+
     @Override
     public StartDataDto startGame(String[] players) {
         List<PlayerDto> newPlayers = new ArrayList<>();
@@ -111,14 +117,9 @@ public class ProgressServiceImpl implements ProgressService {
 
                 if(firstThrow == secondThrow) {
                     player.setCountDouble(player.getCountDouble() + 1);
-                    if (player.getCredit() == 0) {
-                        currentActions.add(DropDice.toString());
-                        blockedActions.clear();
-                    }
-                    else {
+                    if (player.getCredit() != 0) {
                         blockedActions.add(DropDice.toString());
                     }
-                    checkCredit(player, currentActions, blockedActions);
                 }
                 else {
                     player.setCountDouble(0);
@@ -145,7 +146,7 @@ public class ProgressServiceImpl implements ProgressService {
                 }
 
                 MapType mapType = MonopolyMap.getTypeByCellNumber(player.getPosition());
-                generationPossibleActions(mapType, player, players, session, currentActions);
+                generationPossibleActions(mapType, player, players, session, currentActions, blockedActions);
                 break;
             case BuyRealty:
                 action = servicesManager.getRealtyManagerService().playerToBankInteraction(action);
@@ -156,7 +157,6 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSwap(players, currentActions);
                 actionBuyHouse(player, currentActions);
                 actionSellHouse(player, currentActions);
-                checkCredit(player, currentActions, blockedActions);
                 break;
             case BuyHouse:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
@@ -165,7 +165,6 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSellRealty(player, currentActions);
                 actionSwap(players, currentActions);
                 actionSellHouse(player, currentActions);
-                checkCredit(player, currentActions, blockedActions);
                 break;
             case SellHouse:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
@@ -174,7 +173,6 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSellRealty(player, currentActions);
                 actionSwap(players, currentActions);
                 actionBuyHouse(player, currentActions);
-                checkCredit(player, currentActions, blockedActions);
                 break;
             case SellRealty:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
@@ -183,7 +181,6 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSwap(players, currentActions);
                 actionBuyHouse(player, currentActions);
                 actionSellHouse(player, currentActions);
-                checkCredit(player, currentActions, blockedActions);
                 break;
             case LeavePrisonByCard:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
@@ -191,42 +188,23 @@ public class ProgressServiceImpl implements ProgressService {
                 action = servicesManager.getPrisonService().waiting(action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 servicesManager.getCardsManagerService().comebackPrisonCard();
-                checkCredit(player, currentActions, blockedActions);
                 break;
             case LeavePrisonByMoney:
                 action = servicesManager.getPrisonService().waiting(action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
-                checkCredit(player, currentActions, blockedActions);
                 break;
             case MoneyOperation:
                 List<PlayerDto> playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
 
                 if (playersList.size() == 1) {
-                    if (servicesManager.getBankService().isPlayerToBankInteraction(action)) {
-                        action = servicesManager.getBankService().playerToBankInteraction(action);
-
-                        player.setCredit(0L);
-                        currentActions.addAll(blockedActions);
-                        blockedActions.clear();
-                    }
-                    else {
-                        player.setCredit(player.getCredit() + (long) action.getActionBody().get("money"));
-                        blockedActions.add(EndTurn.toString());
-                    }
+                    action = servicesManager.getBankService().playerToBankInteraction(action);
                 }
                 else {
-                    if (servicesManager.getBankService().isPlayerToPlayerInteraction(action)) {
-                        action = servicesManager.getBankService().playerToPlayerInteraction(action);
-
-                        player.setCredit(0L);
-                        currentActions.addAll(blockedActions);
-                        blockedActions.clear();
-                    }
-                    else {
-                        player.setCredit(player.getCredit() + (long) action.getActionBody().get("money"));
-                        blockedActions.add(EndTurn.toString());
-                    }
+                    action = servicesManager.getBankService().playerToPlayerInteraction(action);
                 }
+
+                currentActions.remove(MoneyOperation.toString());
+                player.setCredit(0L);
 
                 playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
                 player = playersList.get(0);
@@ -272,7 +250,6 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSwap(players, currentActions);
                 actionBuyHouse(player, currentActions);
                 actionSellHouse(player, currentActions);
-                checkCredit(player, currentActions, blockedActions);
                 break;
             case EndTurn:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
@@ -292,6 +269,7 @@ public class ProgressServiceImpl implements ProgressService {
                 players.remove(0);
                 player.setCurrentActions(List.of(GiveUp.toString()));
         }
+        checkCredit(player, currentActions, blockedActions);
 
         player.setCurrentActions(new ArrayList<>(currentActions));
         player.setBlockedActions(new ArrayList<>(blockedActions));
@@ -310,12 +288,21 @@ public class ProgressServiceImpl implements ProgressService {
     }
 
     private void checkCredit(PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
-        if (player.getCredit() == 0) {
+        if (player.getCredit() != 0 && currentActions.contains(MoneyOperation.toString())) {
+            blockedActions.add(MoneyOperation.toString());
+            currentActions.remove(MoneyOperation.toString());
+        }
+        else {
             currentActions.addAll(blockedActions);
             blockedActions.clear();
         }
-        else {
-            blockedActions.addAll(Set.of(EndTurn.toString()));
+        if (
+                blockedActions.contains(MoneyOperation.toString()) &&
+                blockedActions.contains(EndTurn.toString()) &&
+                player.getMoney() >= player.getCredit()
+        ) {
+            currentActions.add(MoneyOperation.toString());
+            blockedActions.remove(MoneyOperation.toString());
         }
     }
 
@@ -353,11 +340,100 @@ public class ProgressServiceImpl implements ProgressService {
 
     private void generateHistory(PlayerDto player, ActionDto action, SessionDto session) {
         List<String> history = session.getHistory();
-        history.add(
-                "Игрок " + player.getPlayerFigure() +
-                " выполнил действие " + action.getActionType() +
-                " и ему выпали кубики [" + player.getLastRoll()[0] + "," + player.getLastRoll()[1] + "]"
-        );
+        switch (ActionType.valueOf(action.getActionType())) {
+            case DropDice:
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() +
+                        " и ему выпали кубики " + Arrays.toString(player.getLastRoll())
+                );
+                break;
+            case BuyRealty:
+                RealtyCardDto realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() +
+                        " и купил имущество " + realtyCard.getCardName() +
+                        "за " + realtyCard.getCostCard()
+                );
+                break;
+            case BuyHouse:
+                realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() +
+                        " и купил дом за " + realtyCard.getCostHouse()
+                );
+                break;
+            case SellHouse:
+                realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() +
+                        " и продал дом за " + realtyCard.getCostHouse()
+                );
+                break;
+            case SellRealty:
+                realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() +
+                        " и продал имущество" + realtyCard.getCardName() +
+                        " за " + realtyCard.getCostCard()
+                );
+                break;
+            case LeavePrisonByCard:
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() + " и вышел из тюрьмы по карточке"
+                );
+                break;
+            case LeavePrisonByMoney:
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() +
+                        " и вышел из тюрьмы за деньги. Осталось денег: " + player.getMoney()
+                );
+                break;
+            case MoneyOperation:
+                List<PlayerDto> playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
+                if (playersList.size() == 1) {
+                    history.add(
+                            "Игрок " + player.getPlayerFigure() +
+                            " выполнил действие " + action.getActionType() +
+                            ". Осталось денег: " + player.getMoney()
+                    );
+                } else {
+                    history.add(
+                            "Игрок " + player.getPlayerFigure() +
+                            " выполнил действие " + action.getActionType() +
+                            " с игроком: " + playersList.get(1) +
+                            ". У игрока " + player.getPlayerFigure() + " осталось денег: " + player.getMoney() +
+                            ". У игрока " + playersList.get(1).getPlayerFigure() + " осталось денег: " + playersList.get(1).getMoney()
+                    );
+                }
+                break;
+            case Swap:
+                playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() +
+                        " и обменялся с игроком " + playersList.get(1)
+                );
+                break;
+            case EndTurn:
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() + " и закончил ход"
+                );
+                break;
+            case GiveUp:
+                history.add(
+                        "Игрок " + player.getPlayerFigure() +
+                        " выполнил действие " + action.getActionType() + " и сдался. Долг: " + player.getCredit()
+                );
+                break;
+        }
         session.setHistory(history);
     }
 
@@ -366,7 +442,8 @@ public class ProgressServiceImpl implements ProgressService {
             PlayerDto player,
             List<PlayerDto> players,
             SessionDto session,
-            Set<String> currentActions
+            Set<String> currentActions,
+            Set<String> blockedActions
     ) {
         switch (mapType) {
             case REALTY_CELL:
@@ -378,7 +455,6 @@ public class ProgressServiceImpl implements ProgressService {
                         .orElse(null);
 
                 if (card != null && card.getCountHouse() >= 0 && card.getOwner() != null) {
-                    //TODO проверка на банкрота
                     if (player.getCredit() != 0) {
                         if (player.getMoney() < player.getCredit()) {
                             long costAllRealty = 0;
@@ -387,6 +463,7 @@ public class ProgressServiceImpl implements ProgressService {
                                 costAllRealty += realtyCard.getCountHouse() * realtyCard.getCostHouse();
                             }
                             if (costAllRealty < player.getCredit()) {
+                                player.setCredit(player.getCredit() + money);
                                 currentActions.add(GiveUp.toString());
                             }
                             else {
@@ -398,14 +475,34 @@ public class ProgressServiceImpl implements ProgressService {
                         }
                     }
                 }
-                actionBuyRealty(card, player, currentActions);
+                actionBuyRealty(card, player, currentActions, blockedActions);
                 actionSellRealty(player, currentActions);
                 actionSwap(players, currentActions);
                 actionBuyHouse(player, currentActions);
                 actionSellHouse(player, currentActions);
                 break;
             case PAY_CELL:
-                currentActions.add(MoneyOperation.toString());
+                long money;
+                if (player.getPosition() == 4) {
+                    money = income;
+                }
+                else {
+                    money = luxury;
+                }
+                ActionDto action = ActionDto.builder()
+                        .actionType(MoneyOperation.toString())
+                        .actionBody(new HashMap<>(Map.of(
+                                "player", player,
+                                "money", money
+                        )))
+                        .build();
+                if (servicesManager.getBankService().isPlayerToBankInteraction(action)) {
+                    currentActions.add(MoneyOperation.toString());
+                }
+                else {
+                    player.setCredit(player.getCredit() + money);
+                    blockedActions.add(MoneyOperation.toString());
+                }
 
                 actionSellRealty(player, currentActions);
                 actionSwap(players, currentActions);
@@ -442,7 +539,7 @@ public class ProgressServiceImpl implements ProgressService {
         }
     }
 
-    private void actionBuyRealty(RealtyCardDto card, PlayerDto player, Set<String> currentActions) {
+    private void actionBuyRealty(RealtyCardDto card, PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
         ActionDto action = ActionDto.builder()
                 .actionType(BuyRealty.toString())
                 .actionBody(new HashMap<>(Map.of(
@@ -450,12 +547,23 @@ public class ProgressServiceImpl implements ProgressService {
                         "realtyCard", card
                 )))
                 .build();
+        ActionDto actionMoney = ActionDto.builder()
+                .actionType(MoneyOperation.toString())
+                .actionBody(new HashMap<>(Map.of(
+                        "player", player,
+                        "money", card.getCostCard()
+                )))
+                .build();
 
         if (servicesManager.getRealtyManagerService().isPlayerToBankInteraction(action)){
             currentActions.add(BuyRealty.toString());
         }
-        else if(!card.getOwner().equals(player.getPlayerFigure())){
+        else if(!card.getOwner().equals(player.getPlayerFigure()) && servicesManager.getBankService().isPlayerToPlayerInteraction(actionMoney)){
+            player.setCredit(player.getCredit() + card.getCostCard());
             currentActions.add(MoneyOperation.toString());
+        }
+        else {
+            blockedActions.add(MoneyOperation.toString());
         }
     }
 
