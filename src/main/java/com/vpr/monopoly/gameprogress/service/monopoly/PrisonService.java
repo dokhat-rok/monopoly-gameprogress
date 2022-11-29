@@ -7,7 +7,7 @@ public interface PrisonService extends MonopolyService {
 
     PlayerDto imprisonPlayer(PlayerDto player);
 
-    ActionDto waiting(ActionDto action);
+    ActionDto waiting(String token, ActionDto action);
 
     Boolean isWaiting(ActionDto action);
 }

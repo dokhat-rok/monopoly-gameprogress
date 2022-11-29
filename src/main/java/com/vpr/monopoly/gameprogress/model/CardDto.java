@@ -1,28 +1,38 @@
 package com.vpr.monopoly.gameprogress.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
-@Schema(description = "Модель карты общественной казны и шанса")
+/**
+ * Модель карты общественной казны и шанса
+ */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class CardDto implements Serializable {
 
-    @Schema(description = "Действия")
-    private List<String> actions;
+    /**
+     * Тип карты
+     */
+    private String cardType;
 
-    @Schema(description = "Описание карты")
+    /**
+     * Описание карты
+     */
     private String description;
 
-    @Schema(description = "Атрибуты карты")
-    private Map<String, String> options;
+    /**
+     * Тип дейсвтия, которое должен выполнить игрок
+     */
+    private String cardActionType;
+
+    /**
+     * Дополнительный параметр карты к дейсвтию
+     */
+    private Integer parameter;
 }

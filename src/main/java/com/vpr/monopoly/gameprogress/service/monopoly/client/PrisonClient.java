@@ -3,9 +3,7 @@ package com.vpr.monopoly.gameprogress.service.monopoly.client;
 import com.vpr.monopoly.gameprogress.model.ActionDto;
 import com.vpr.monopoly.gameprogress.model.PlayerDto;
 import com.vpr.monopoly.gameprogress.service.monopoly.PrisonService;
-import com.vpr.monopoly.gameprogress.service.ServicesManager;
 import com.vpr.monopoly.gameprogress.utils.CheckStatusError;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -57,8 +55,8 @@ public class PrisonClient implements PrisonService {
     }
 
     @Override
-    public ActionDto waiting(ActionDto action) {
-        String uri = "/waiting";
+    public ActionDto waiting(String token, ActionDto action) {
+        String uri = "/waiting/" + token;
         return this.connectByAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
     }
 
