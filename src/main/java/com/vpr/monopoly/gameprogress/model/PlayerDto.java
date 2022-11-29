@@ -50,8 +50,8 @@ public class PlayerDto implements Serializable {
     private Long credit;
 
     @Schema(description = "Текущие возможные действия")
-    private Set<String> currentActions;
+    private List<String> currentActions;
 
     @Schema(description = "Заблокированные действия")
-    private Set<String> blockedActions;
+    private List<String> blockedActions;
 }

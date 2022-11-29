@@ -81,8 +81,8 @@ public class ProgressServiceImpl implements ProgressService {
         Map<String, Object> resultBody = new HashMap<>();
         PlayerDto player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
         RealtyCardDto realtyCard;
-        Set<String> currentActions = player.getCurrentActions();
-        Set<String> blockedActions = player.getBlockedActions();
+        Set<String> currentActions = new HashSet<>();
+        Set<String> blockedActions = new HashSet<>();
 
         switch (ActionType.valueOf(action.getActionType())) {
             case DropDice:
@@ -198,6 +198,7 @@ public class ProgressServiceImpl implements ProgressService {
                     if (servicesManager.getBankService().isPlayerToBankInteraction(action)) {
                         action = servicesManager.getBankService().playerToBankInteraction(action);
 
+                        player.setCredit(0L);
                         blockedActions.clear();
                         currentActions.addAll(Set.of(DropDice.toString(), EndTurn.toString()));
                     }
@@ -210,6 +211,7 @@ public class ProgressServiceImpl implements ProgressService {
                     if (servicesManager.getBankService().isPlayerToPlayerInteraction(action)) {
                         action = servicesManager.getBankService().playerToPlayerInteraction(action);
 
+                        player.setCredit(0L);
                         blockedActions.clear();
                         currentActions.addAll(Set.of(DropDice.toString(), EndTurn.toString()));
                     }
@@ -270,7 +272,7 @@ public class ProgressServiceImpl implements ProgressService {
                 players.add(players.remove(0));
                 resultBody.put("nextPlayer", players.get(0));
 
-                players.get(0).setCurrentActions(Set.of(DropDice.toString()));
+                players.get(0).setCurrentActions(List.of(DropDice.toString()));
                 break;
             case GiveUp:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
@@ -281,11 +283,11 @@ public class ProgressServiceImpl implements ProgressService {
                 }
                 session.getRealty().sort(Comparator.comparing(RealtyCardDto::getPosition));
                 players.remove(0);
-                player.setCurrentActions(Set.of(GiveUp.toString()));
+                player.setCurrentActions(List.of(GiveUp.toString()));
         }
 
-        player.setCurrentActions(currentActions);
-        player.setBlockedActions(blockedActions);
+        player.setCurrentActions(new ArrayList<>(currentActions));
+        player.setBlockedActions(new ArrayList<>(blockedActions));
 
         this.updatePlayerInSession(player, session);
 
