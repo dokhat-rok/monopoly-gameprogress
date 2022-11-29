@@ -1,6 +1,5 @@
 package com.vpr.monopoly.gameprogress.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,6 +40,11 @@ public class SessionDto implements Serializable {
      * Колоды
      */
     private Map<String, List<CardDto>> decks;
+
+    /**
+     * Наличие карты выхода из тюрьмы в каждой колоде на данный момент
+     */
+    private Map<String, Boolean> isDecksHaveOutPrison;
 
     /**
      * История хода игры

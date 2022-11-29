@@ -131,7 +131,7 @@ public class ProgressServiceImpl implements ProgressService {
                                     "player", player
                             )))
                             .build();
-                    prisonAction = servicesManager.getPrisonService().waiting(prisonAction);
+                    prisonAction = servicesManager.getPrisonService().waiting(, prisonAction);
                     player = objectMapper.convertValue(prisonAction.getActionBody().get("player"), PlayerDto.class);
                 }
 
@@ -179,13 +179,13 @@ public class ProgressServiceImpl implements ProgressService {
             case LeavePrisonByCard:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 player.setPrisonOutCard(player.getPrisonOutCard() - 1);
-                action = servicesManager.getPrisonService().waiting(action);
+                action = servicesManager.getPrisonService().waiting(, action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 servicesManager.getCardsManagerService().comebackPrisonCard();
                 resultActions.add(EndTurn.toString());
                 break;
             case LeavePrisonByMoney:
-                action = servicesManager.getPrisonService().waiting(action);
+                action = servicesManager.getPrisonService().waiting(, action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 resultActions.add(EndTurn.toString());
                 break;

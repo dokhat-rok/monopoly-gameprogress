@@ -7,11 +7,11 @@ import java.util.Map;
 
 public interface CardsManagerService extends MonopolyService {
 
-    CardDto getChanceCard();
+    CardDto getChanceCard(String token);
 
-    CardDto getCommunityChestCard();
+    CardDto getCommunityChestCard(String token);
 
-    void comebackPrisonCard();
+    void comebackPrisonCard(String token);
 
     Map<String, List<CardDto>> initializingDecks();
 }

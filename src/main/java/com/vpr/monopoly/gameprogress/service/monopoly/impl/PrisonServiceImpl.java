@@ -42,7 +42,7 @@ public class PrisonServiceImpl implements PrisonService {
     }
 
     @Override
-    public ActionDto waiting(ActionDto action) {
+    public ActionDto waiting(String token, ActionDto action) {
         log.info("Requesting... to {}", ServiceType.PRISON.getName());
         PlayerDto player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
         switch (ActionType.valueOf(action.getActionType())){
@@ -57,6 +57,7 @@ public class PrisonServiceImpl implements PrisonService {
                 break;
             case LeavePrisonByCard:
                 player.setPrisonOutCard(player.getPrisonOutCard() - 1);
+                servicesManager.getCardsManagerService().comebackPrisonCard(token);
                 break;
             case LeavePrisonByMoney:
                 ActionDto bankAction = ActionDto.builder()
