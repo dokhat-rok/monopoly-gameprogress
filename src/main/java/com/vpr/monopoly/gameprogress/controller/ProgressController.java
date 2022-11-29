@@ -54,7 +54,7 @@ public class ProgressController {
             @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken
     ){
         List<String> history = progressService.endGame(sessionToken);
-        log.info("End game");
+        log.info("End game by session {}", sessionToken);
         return ResponseEntity.ok(history);
     }
 }

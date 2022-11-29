@@ -111,6 +111,13 @@ public class ProgressServiceImpl implements ProgressService {
 
                 if(firstThrow == secondThrow) {
                     player.setCountDouble(player.getCountDouble() + 1);
+                    if (player.getCredit() == 0) {
+                        currentActions.add(DropDice.toString());
+                        blockedActions.clear();
+                    }
+                    else {
+                        blockedActions.add(DropDice.toString());
+                    }
                     checkCredit(player, currentActions, blockedActions);
                 }
                 else {
@@ -199,12 +206,12 @@ public class ProgressServiceImpl implements ProgressService {
                         action = servicesManager.getBankService().playerToBankInteraction(action);
 
                         player.setCredit(0L);
+                        currentActions.addAll(blockedActions);
                         blockedActions.clear();
-                        currentActions.addAll(Set.of(DropDice.toString(), EndTurn.toString()));
                     }
                     else {
                         player.setCredit(player.getCredit() + (long) action.getActionBody().get("money"));
-                        blockedActions.addAll(Set.of(DropDice.toString(), EndTurn.toString()));
+                        blockedActions.add(EndTurn.toString());
                     }
                 }
                 else {
@@ -212,12 +219,12 @@ public class ProgressServiceImpl implements ProgressService {
                         action = servicesManager.getBankService().playerToPlayerInteraction(action);
 
                         player.setCredit(0L);
+                        currentActions.addAll(blockedActions);
                         blockedActions.clear();
-                        currentActions.addAll(Set.of(DropDice.toString(), EndTurn.toString()));
                     }
                     else {
                         player.setCredit(player.getCredit() + (long) action.getActionBody().get("money"));
-                        blockedActions.addAll(Set.of(DropDice.toString(), EndTurn.toString()));
+                        blockedActions.add(EndTurn.toString());
                     }
                 }
 
@@ -293,8 +300,6 @@ public class ProgressServiceImpl implements ProgressService {
 
         session.setPlayers(players);
         resultBody.put("player", player);
-        resultBody.put("currentActions", List.of(player.getCurrentActions()));
-        resultBody.put("blockedActions", List.of(player.getBlockedActions()));
         resultBody.put("realtyList", session.getRealty());
         sessionRepository.set(sessionToken, session);
         generateHistory(player, action, session);
@@ -306,11 +311,11 @@ public class ProgressServiceImpl implements ProgressService {
 
     private void checkCredit(PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
         if (player.getCredit() == 0) {
+            currentActions.addAll(blockedActions);
             blockedActions.clear();
-            currentActions.addAll(Set.of(DropDice.toString(), EndTurn.toString()));
         }
         else {
-            blockedActions.addAll(Set.of(EndTurn.toString(), DropDice.toString()));
+            blockedActions.addAll(Set.of(EndTurn.toString()));
         }
     }
 
@@ -348,7 +353,11 @@ public class ProgressServiceImpl implements ProgressService {
 
     private void generateHistory(PlayerDto player, ActionDto action, SessionDto session) {
         List<String> history = session.getHistory();
-        history.add("Player " + player + ", action " + action.getActionType());
+        history.add(
+                "Игрок " + player.getPlayerFigure() +
+                " выполнил действие " + action.getActionType() +
+                " и ему выпали кубики [" + player.getLastRoll()[0] + "," + player.getLastRoll()[1] + "]"
+        );
         session.setHistory(history);
     }
 
@@ -375,6 +384,7 @@ public class ProgressServiceImpl implements ProgressService {
                             long costAllRealty = 0;
                             for (RealtyCardDto realtyCard: player.getRealtyList()) {
                                 costAllRealty += realtyCard.getCostCard();
+                                costAllRealty += realtyCard.getCountHouse() * realtyCard.getCostHouse();
                             }
                             if (costAllRealty < player.getCredit()) {
                                 currentActions.add(GiveUp.toString());
