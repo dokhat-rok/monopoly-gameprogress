@@ -57,6 +57,9 @@ public class ProgressServiceImpl implements ProgressService {
                     .realtyList(new ArrayList<>())
                     .monopolies(new ArrayList<>())
                     .inPrison(0L)
+                    .blockedActions(new ArrayList<>())
+                    .currentActions(new ArrayList<>())
+                    .credit(0L)
                     .build());
         }
 
