@@ -139,7 +139,7 @@ public class ProgressServiceImpl implements ProgressService {
                                     "player", player
                             )))
                             .build();
-                    prisonAction = servicesManager.getPrisonService().waiting(, prisonAction);
+                    prisonAction = servicesManager.getPrisonService().waiting(sessionToken, prisonAction);
                     player = objectMapper.convertValue(prisonAction.getActionBody().get("player"), PlayerDto.class);
                 }
 
@@ -183,12 +183,11 @@ public class ProgressServiceImpl implements ProgressService {
             case LeavePrisonByCard:
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 player.setPrisonOutCard(player.getPrisonOutCard() - 1);
-                action = servicesManager.getPrisonService().waiting(, action);
+                action = servicesManager.getPrisonService().waiting(sessionToken, action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
-                servicesManager.getCardsManagerService().comebackPrisonCard();
                 break;
             case LeavePrisonByMoney:
-                action = servicesManager.getPrisonService().waiting(, action);
+                action = servicesManager.getPrisonService().waiting(sessionToken, action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 break;
             case MoneyOperation:
@@ -498,11 +497,9 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSellHouse(player, currentActions);
                 break;
             case COMMUNITY_CHEST_CELL:
-                CardDto communityChestCard = servicesManager.getCardsManagerService().getCommunityChestCard();
                 //TODO Сделать
                 break;
             case CHANCE_CELL:
-                CardDto chanceCard = servicesManager.getCardsManagerService().getChanceCard();
                 //TODO Сделать
                 break;
             case PARKING_CELL:
