@@ -87,7 +87,7 @@ public class ProgressServiceImpl implements ProgressService {
         Map<String, Object> resultBody = new HashMap<>();
         PlayerDto player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
         RealtyCardDto realtyCard;
-        Set<String> currentActions = new HashSet<>();
+        Set<String> currentActions = new HashSet<>(player.getCurrentActions());
         Set<String> blockedActions = new HashSet<>();
 
         switch (ActionType.valueOf(action.getActionType())) {
@@ -117,12 +117,7 @@ public class ProgressServiceImpl implements ProgressService {
 
                 if(firstThrow == secondThrow) {
                     player.setCountDouble(player.getCountDouble() + 1);
-                    if (player.getCredit() != 0) {
-                        blockedActions.add(DropDice.toString());
-                    }
-                    else {
-                        currentActions.add(DropDice.toString());
-                    }
+                    currentActions.add(DropDice.toString());
                 }
                 else {
                     player.setCountDouble(0);
@@ -289,25 +284,17 @@ public class ProgressServiceImpl implements ProgressService {
 
     private void checkCredit(PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
         if (blockedActions.contains(MoneyOperation.toString()) && player.getMoney() >= player.getCredit()) {
-            if (player.getMoney() >= player.getCredit()) {
-                currentActions.add(MoneyOperation.toString());
-                currentActions.remove(MoneyOperation.toString());
-            }
+            currentActions.add(MoneyOperation.toString());
+            currentActions.remove(MoneyOperation.toString());
         }
-        else {
+        if (!currentActions.contains(MoneyOperation.toString()) && !blockedActions.contains(MoneyOperation.toString())) {
             currentActions.addAll(blockedActions);
             blockedActions.clear();
         }
 
         if (currentActions.contains(MoneyOperation.toString()) || blockedActions.contains(MoneyOperation.toString())) {
-            if (currentActions.contains(DropDice.toString())) {
-                blockedActions.add(DropDice.toString());
-                currentActions.remove(DropDice.toString());
-            }
-            else if (currentActions.contains(EndTurn.toString())) {
-                blockedActions.add(EndTurn.toString());
-                currentActions.remove(EndTurn.toString());
-            }
+            if (currentActions.remove(DropDice.toString())) blockedActions.add(DropDice.toString());
+            else if (currentActions.remove(EndTurn.toString())) blockedActions.add(EndTurn.toString());
         }
     }
 
