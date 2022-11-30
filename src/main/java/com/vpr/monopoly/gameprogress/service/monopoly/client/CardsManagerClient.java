@@ -22,7 +22,7 @@ import java.util.*;
 public class CardsManagerClient implements CardsManagerService {
 
     @Value("${cards.service.base.url}")
-    private final String baseUrl;
+    private String baseUrl;
 
     private WebClient webClient;
 
