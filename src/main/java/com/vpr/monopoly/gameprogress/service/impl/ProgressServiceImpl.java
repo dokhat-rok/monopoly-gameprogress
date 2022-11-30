@@ -88,7 +88,7 @@ public class ProgressServiceImpl implements ProgressService {
         PlayerDto player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
         RealtyCardDto realtyCard;
         Set<String> currentActions = new HashSet<>(player.getCurrentActions());
-        Set<String> blockedActions = new HashSet<>();
+        Set<String> blockedActions = new HashSet<>(player.getBlockedActions());
 
         switch (ActionType.valueOf(action.getActionType())) {
             case DropDice:
@@ -269,6 +269,7 @@ public class ProgressServiceImpl implements ProgressService {
         player.setCurrentActions(new ArrayList<>(currentActions));
         player.setBlockedActions(new ArrayList<>(blockedActions));
 
+        //TODO проверить сохранение игроков
         this.updatePlayerInSession(player, session);
 
         session.setPlayers(players);
@@ -285,7 +286,7 @@ public class ProgressServiceImpl implements ProgressService {
     private void checkCredit(PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
         if (blockedActions.contains(MoneyOperation.toString()) && player.getMoney() >= player.getCredit()) {
             currentActions.add(MoneyOperation.toString());
-            currentActions.remove(MoneyOperation.toString());
+            blockedActions.remove(MoneyOperation.toString());
         }
         if (!currentActions.contains(MoneyOperation.toString()) && !blockedActions.contains(MoneyOperation.toString())) {
             currentActions.addAll(blockedActions);
