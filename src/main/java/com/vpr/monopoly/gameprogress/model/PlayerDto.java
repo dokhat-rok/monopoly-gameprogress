@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Schema(description = "Модель игрока")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -44,4 +45,13 @@ public class PlayerDto implements Serializable {
 
     @Schema(description = "Нахождение в тюрьме")
     private Long inPrison;
+
+    @Schema(description = "Долг")
+    private Long credit;
+
+    @Schema(description = "Текущие возможные действия")
+    private List<String> currentActions;
+
+    @Schema(description = "Заблокированные действия")
+    private List<String> blockedActions;
 }
