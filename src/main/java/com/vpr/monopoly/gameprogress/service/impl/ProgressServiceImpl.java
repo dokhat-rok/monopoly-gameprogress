@@ -156,7 +156,9 @@ public class ProgressServiceImpl implements ProgressService {
                         sessionToken);
                 break;
             case BuyRealty:
+                action.getActionBody().put("player", player);
                 action = servicesManager.getRealtyManagerService().playerToBankInteraction(action);
+                player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
                 updateRealtyInSession(realtyCard, session);
                 currentActions.remove(action.getActionType());
