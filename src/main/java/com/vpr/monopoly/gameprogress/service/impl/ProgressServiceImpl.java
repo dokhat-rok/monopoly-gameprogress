@@ -763,7 +763,7 @@ public class ProgressServiceImpl implements ProgressService {
                 });
                 player.setPosition(prisonPosition.get());
                 this.generationPossibleActions(
-                        MapType.REALTY_CELL,
+                        MapType.VISITING_PRISON_CELL,
                         player,
                         players,
                         session,
