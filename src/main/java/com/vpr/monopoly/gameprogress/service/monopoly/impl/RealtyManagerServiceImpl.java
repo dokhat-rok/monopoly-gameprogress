@@ -75,7 +75,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                                 .actionType(MoneyOperation.toString())
                                 .actionBody(new HashMap<>(Map.of(
                                         "playerList", List.of(player),
-                                        "money", -realtyCard.getCostCard() / 2
+                                        "money", realtyCard.getCostCard() / 2
                                 )))
                                 .build()
                 );
