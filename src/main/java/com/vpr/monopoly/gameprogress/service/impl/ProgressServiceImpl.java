@@ -460,12 +460,12 @@ public class ProgressServiceImpl implements ProgressService {
                         .orElse(null);
 
                 assert realtyCard != null;
-                if(realtyCard.getOwner().equals(player.getPlayerFigure())) break;
-
                 if (realtyCard.getOwner() == null) {
                     actionBuyRealty(realtyCard, player, currentActions, blockedActions);
                     break;
                 }
+
+                if(realtyCard.getOwner().equals(player.getPlayerFigure())) break;
 
                 if(session.getRealtyColors().containsKey(realtyCard.getColor())){
                     player.setCredit(realtyCard.getPriceMap().get(realtyCard.getCountHouse()));
@@ -549,7 +549,7 @@ public class ProgressServiceImpl implements ProgressService {
             case TO_PRISON_CELL:
                 player = servicesManager.getPrisonService().imprisonPlayer(player);
                 player.setPosition(10);
-                return;
+                break;
         }
         actionSellRealty(player, currentActions);
         actionBuyHouse(player, currentActions);
