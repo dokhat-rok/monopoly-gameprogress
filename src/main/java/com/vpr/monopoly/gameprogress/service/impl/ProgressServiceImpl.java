@@ -302,6 +302,22 @@ public class ProgressServiceImpl implements ProgressService {
                 .build();
     }
 
+    @Override
+    public List<String> endGame(String sessionToken) {
+        SessionDto session = sessionRepository.get(sessionToken);
+        return session.getHistory();
+    }
+
+    @Override
+    public StartDataDto continueGame(String sessionToken) {
+        SessionDto session = sessionRepository.get(sessionToken);
+        return StartDataDto.builder()
+                .token(sessionToken)
+                .players(session.getPlayers())
+                .realtyList(session.getRealty())
+                .build();
+    }
+
     private void checkCredit(PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
         if (blockedActions.contains(MoneyOperation.toString()) && player.getMoney() >= player.getCredit()) {
             currentActions.add(MoneyOperation.toString());
@@ -349,12 +365,6 @@ public class ProgressServiceImpl implements ProgressService {
                     .orElse(null);
             updateRealtyInSession(updateCard, session);
         }
-    }
-
-    @Override
-    public List<String> endGame(String sessionToken) {
-        SessionDto session = sessionRepository.get(sessionToken);
-        return session.getHistory();
     }
 
     private void generateHistory(PlayerDto player, ActionDto action, SessionDto session) {
