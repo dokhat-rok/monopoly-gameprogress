@@ -179,6 +179,7 @@ public class ProgressServiceImpl implements ProgressService {
                 realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
                 currentActions.remove(action.getActionType());
                 buyAndSellPlayersAction(action, player, realtyCard, session);
+                for(RealtyCardDto r : player.getRealtyList()) actionBuyRealty(r, player, currentActions, blockedActions);
                 actionSellRealty(player, currentActions);
                 actionSwap(players, currentActions);
                 actionBuyHouse(player, currentActions);
