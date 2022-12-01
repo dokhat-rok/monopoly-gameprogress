@@ -58,6 +58,12 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 player = playerList.get(0);
                 realtyCard.setOwner(player.getPlayerFigure());
                 realtyCard.setCountHouse(0L);
+                if(money.longValue() != realtyCard.getCostCard().longValue()){
+                    player.getRealtyList().remove(player.getRealtyList().stream()
+                            .filter(r -> r.getPosition() == realtyCard.getPosition())
+                            .findFirst()
+                            .orElse(null));
+                }
                 player.getRealtyList().add(realtyCard);
                 break;
             case SellRealty:
@@ -151,7 +157,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .filter(r -> r.getPosition() == oldRealtyCard.getPosition())
                 .findFirst()
                 .orElse(null);
-        Boolean result = !changesPlayer.getRealtyList().remove(realtyCard);
+        Boolean result = changesPlayer.getRealtyList().remove(realtyCard);
         log.info("Response {} ==> {}", REALTY_MANAGER.getName(), result);
         return result;
     }
