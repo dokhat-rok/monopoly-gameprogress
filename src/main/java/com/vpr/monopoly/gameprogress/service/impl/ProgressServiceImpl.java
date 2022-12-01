@@ -336,6 +336,7 @@ public class ProgressServiceImpl implements ProgressService {
 
     private void buyAndSellPlayersAction(ActionDto action, PlayerDto player, RealtyCardDto card, SessionDto session){
         if (servicesManager.getRealtyManagerService().isPlayerToBankInteraction(action)) {
+            action.getActionBody().put("player", player);
             action = servicesManager.getRealtyManagerService().playerToBankInteraction(action);
             PlayerDto changesPlayer = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
             player.setMoney(changesPlayer.getMoney());
