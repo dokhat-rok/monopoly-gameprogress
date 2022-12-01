@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +33,9 @@ public class BankServiceImpl implements BankService {
 
             List<PlayerDto> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
             PlayerDto player = playerList.get(0);
-            int money = (int) action.getActionBody().get("money");
+            BigInteger money = new BigInteger(action.getActionBody().get("money").toString());
 
-            player.setMoney(player.getMoney() + money);
+            player.setMoney(player.getMoney() + money.longValue());
             result = ActionDto.builder()
                     .actionType(MoneyOperation.toString())
                     .actionBody(new HashMap<>(Map.of(
@@ -70,10 +71,10 @@ public class BankServiceImpl implements BankService {
             List<PlayerDto> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
             PlayerDto player1 = playerList.get(0);
             PlayerDto player2 = playerList.get(1);
-            int money = (int) action.getActionBody().get("money");
+            BigInteger money = new BigInteger(action.getActionBody().get("money").toString());
 
-            player1.setMoney(player1.getMoney() + money);
-            player2.setMoney(player2.getMoney() - money);
+            player1.setMoney(player1.getMoney() + money.longValue());
+            player2.setMoney(player2.getMoney() - money.longValue());
             result = ActionDto.builder()
                     .actionType(MoneyOperation.toString())
                     .actionBody(new HashMap<>(Map.of(
