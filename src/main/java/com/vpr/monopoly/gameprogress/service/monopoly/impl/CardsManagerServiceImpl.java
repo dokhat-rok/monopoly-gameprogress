@@ -76,7 +76,7 @@ public class CardsManagerServiceImpl implements CardsManagerService {
                 CardDto.builder()
                         .cardType(CommunityChest.toString())
                         .description("Отправляйтесь на Старую дорогу")
-                        .cardActionType(Move.toString())
+                        .cardActionType(Place.toString())
                         .parameter(1)
                         .build(),
                 CardDto.builder()
@@ -187,6 +187,10 @@ public class CardsManagerServiceImpl implements CardsManagerService {
 
         CardDto card = session.getDecks().get(cardType.toString()).remove(0);
         log.info("Response {} ==> {}", ServiceType.CARDS_MANAGER.getName(), card);
+
+        if(card.getCardActionType().equals(OutPrison.toString()))
+            session.getIsDecksHaveOutPrison().put(cardType.toString(), false);
+
         sessionRepository.set(token, session);
         return card;
     }
