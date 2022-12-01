@@ -100,6 +100,7 @@ public class ProgressServiceImpl implements ProgressService {
 
         switch (ActionType.valueOf(action.getActionType())) {
             case DropDice:
+                currentActions.remove(action.getActionType());
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 int firstThrow = ThreadLocalRandom.current().nextInt(1, 7);
                 int secondThrow = ThreadLocalRandom.current().nextInt(1, 7);
@@ -136,7 +137,6 @@ public class ProgressServiceImpl implements ProgressService {
                     prisonAction = servicesManager.getPrisonService().waiting(sessionToken, prisonAction);
                     player = objectMapper.convertValue(prisonAction.getActionBody().get("player"), PlayerDto.class);
                 }
-                currentActions.remove(action.getActionType());
                 MapType mapType = MonopolyMap.getTypeByCellNumber(player.getPosition());
                 generationPossibleActions(
                         mapType,
