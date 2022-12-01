@@ -311,6 +311,11 @@ public class ProgressServiceImpl implements ProgressService {
             if (currentActions.remove(DropDice.toString())) blockedActions.add(DropDice.toString());
             else if (currentActions.remove(EndTurn.toString())) blockedActions.add(EndTurn.toString());
         }
+
+        if(currentActions.contains(DropDice.toString()) && currentActions.contains(EndTurn.toString())){
+            currentActions.remove(EndTurn.toString());
+            blockedActions.add(EndTurn.toString());
+        }
     }
 
     private void swapPlayersAction(SessionDto session, List<RealtyCardDto> offer, PlayerDto player) {
