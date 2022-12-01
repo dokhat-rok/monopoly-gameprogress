@@ -261,7 +261,7 @@ public class ProgressServiceImpl implements ProgressService {
                 player = players.remove(0);
                 player.setCurrentActions(new ArrayList<>());
                 player.setBlockedActions(new ArrayList<>());
-                players.add(players.remove(0));
+                players.add(player);
                 resultBody.put("nextPlayer", players.get(0));
                 currentActions.remove(action.getActionType());
                 players.get(0).setCurrentActions(List.of(DropDice.toString()));
