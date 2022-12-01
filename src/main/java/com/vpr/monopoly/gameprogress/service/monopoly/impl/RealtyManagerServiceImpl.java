@@ -75,10 +75,11 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 );
                 playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
                 player = playerList.get(0);
-                realtyCard.setOwner(player.getPlayerFigure());
                 realtyCard.setCountHouse(-1L);
-                player.getRealtyList().remove(realtyCard);
-                realtyCard.setCountHouse(0L);
+                player.getRealtyList().remove(player.getRealtyList().stream()
+                        .filter(r -> r.getPosition() == realtyCard.getPosition())
+                        .findFirst()
+                        .orElse(null));
                 player.getRealtyList().add(realtyCard);
                 break;
             case BuyHouse:
@@ -143,9 +144,13 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
     @Override
     public Boolean isPlayerToBankInteraction(ActionDto action) {
         log.info("Requesting... to {}", REALTY_MANAGER.getName());
-        RealtyCardDto realtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
+        RealtyCardDto oldRealtyCard = objectMapper.convertValue(action.getActionBody().get("realtyCard"), RealtyCardDto.class);
         action = this.playerToBankInteraction(action);
         PlayerDto changesPlayer = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
+        RealtyCardDto realtyCard = changesPlayer.getRealtyList().stream()
+                .filter(r -> r.getPosition() == oldRealtyCard.getPosition())
+                .findFirst()
+                .orElse(null);
         Boolean result = !changesPlayer.getRealtyList().remove(realtyCard);
         log.info("Response {} ==> {}", REALTY_MANAGER.getName(), result);
         return result;
