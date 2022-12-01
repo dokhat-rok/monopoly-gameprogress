@@ -12,4 +12,6 @@ public interface ProgressService {
     ActionDto actionPlayer(String sessionToken, ActionDto action);
 
     List<String> endGame(String sessionToken);
+
+    StartDataDto continueGame(String sessionToken);
 }

@@ -57,4 +57,14 @@ public class ProgressController {
         log.info("End game by session {}", sessionToken);
         return ResponseEntity.ok(history);
     }
+
+    @Operation(summary = "Продолжить начатую ранее сессию")
+    @GetMapping("/continue/{token}")
+    public ResponseEntity<StartDataDto> continueGame(
+            @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken
+    ){
+        StartDataDto continueData = progressService.continueGame(sessionToken);
+        log.info("Continue game by token {}", sessionToken);
+        return ResponseEntity.ok(continueData);
+    }
 }
