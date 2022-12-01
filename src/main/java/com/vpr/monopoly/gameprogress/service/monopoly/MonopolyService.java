@@ -16,7 +16,16 @@ public interface MonopolyService {
         return true;
     }
 
-    default ActionDto connectByAction(WebClient webClient, String baseUrl, String uri, HttpMethod httpMethod, ActionDto action, Logger log){
+    default ActionDto connectByAction(
+            WebClient webClient,
+            String baseUrl,
+            String uri,
+            HttpMethod httpMethod,
+            ActionDto action,
+            Logger log,
+            int retryCount,
+            int timeout
+    ){
         log.info("Requesting... to {}{}", baseUrl, uri);
 
         Optional<ActionDto> response = Optional.empty();
@@ -28,7 +37,7 @@ public interface MonopolyService {
                         .body(action, ActionDto.class)
                         .retrieve()
                         .bodyToMono(ActionDto.class)
-                        .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                        .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                                 .filter(CheckStatusError::isServerError))
                         .onErrorResume(e -> {
                             log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
@@ -43,7 +52,7 @@ public interface MonopolyService {
                         .body(action, ActionDto.class)
                         .retrieve()
                         .bodyToMono(ActionDto.class)
-                        .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                        .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                                 .filter(CheckStatusError::isServerError))
                         .onErrorResume(e -> {
                             log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
@@ -57,7 +66,16 @@ public interface MonopolyService {
         return response.orElse(null);
     }
 
-    default Boolean connectByIsAction(WebClient webClient, String baseUrl, String uri, HttpMethod httpMethod, ActionDto action, Logger log){
+    default Boolean connectByIsAction(
+            WebClient webClient,
+            String baseUrl,
+            String uri,
+            HttpMethod httpMethod,
+            ActionDto action,
+            Logger log,
+            int retryCount,
+            int timeout
+    ){
         log.info("Requesting... to {}{}", baseUrl, uri);
 
         Optional<Boolean> response = Optional.empty();
@@ -69,7 +87,7 @@ public interface MonopolyService {
                         .body(Mono.just(action), ActionDto.class)
                         .retrieve()
                         .bodyToMono(Boolean.class)
-                        .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                        .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                                 .filter(CheckStatusError::isServerError))
                         .onErrorResume(e -> {
                             log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
@@ -84,7 +102,7 @@ public interface MonopolyService {
                         .body(Mono.just(action), ActionDto.class)
                         .retrieve()
                         .bodyToMono(Boolean.class)
-                        .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                        .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                                 .filter(CheckStatusError::isServerError))
                         .onErrorResume(e -> {
                             log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());

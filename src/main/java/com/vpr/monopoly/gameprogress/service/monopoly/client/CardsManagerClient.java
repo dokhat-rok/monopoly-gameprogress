@@ -24,6 +24,12 @@ public class CardsManagerClient implements CardsManagerService {
     @Value("${cards.service.base.url}")
     private String baseUrl;
 
+    @Value("${services.retry.count}")
+    private Integer retryCount;
+
+    @Value("${services.timeout}")
+    private Integer timeout;
+
     private WebClient webClient;
 
     @PostConstruct
@@ -53,7 +59,7 @@ public class CardsManagerClient implements CardsManagerService {
                 .uri(uriBuilder -> uriBuilder.path(uri).build())
                 .retrieve()
                 .bodyToMono(Void.class)
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                         .filter(CheckStatusError::isServerError))
                 .onErrorResume(e -> {
                     log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
@@ -73,7 +79,7 @@ public class CardsManagerClient implements CardsManagerService {
                 .uri(uriBuilder -> uriBuilder.path(uri).build())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, List<CardDto>>>(){})
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                         .filter(CheckStatusError::isServerError))
                 .onErrorResume(e -> {
                     log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
@@ -97,7 +103,7 @@ public class CardsManagerClient implements CardsManagerService {
                 .uri(uriBuilder -> uriBuilder.path(uri).build())
                 .retrieve()
                 .bodyToMono(CardDto.class)
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                         .filter(CheckStatusError::isServerError))
                 .onErrorResume(e -> {
                     log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());

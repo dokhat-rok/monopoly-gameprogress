@@ -22,6 +22,12 @@ public class BankClient implements BankService {
     @Value("${bank.service.base.url}")
     private String baseUrl;
 
+    @Value("${services.retry.count}")
+    private Integer retryCount;
+
+    @Value("${services.timeout}")
+    private Integer timeout;
+
     private WebClient webClient;
 
     @PostConstruct
@@ -32,25 +38,25 @@ public class BankClient implements BankService {
     @Override
     public ActionDto playerToBankInteraction(ActionDto action) {
         String uri = "/tobank";
-        return this.connectByAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
+        return this.connectByAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log, retryCount, timeout);
     }
 
     @Override
     public Boolean isPlayerToBankInteraction(ActionDto action) {
         String uri = "/istobank";
-        return this.connectByIsAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
+        return this.connectByIsAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log, retryCount, timeout);
     }
 
     @Override
     public ActionDto playerToPlayerInteraction(ActionDto action) {
         String uri = "/toplayer";
-        return this.connectByAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
+        return this.connectByAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log, retryCount, timeout);
     }
 
     @Override
     public Boolean isPlayerToPlayerInteraction(ActionDto action) {
         String uri = "/istoplayer";
-        return this.connectByIsAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
+        return this.connectByIsAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log, retryCount, timeout);
     }
 
     @Override

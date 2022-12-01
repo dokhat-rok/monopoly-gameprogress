@@ -26,6 +26,12 @@ public class PrisonClient implements PrisonService {
     @Value("${prison.service.base.url}")
     private String baseUrl;
 
+    @Value("${services.retry.count}")
+    private Integer retryCount;
+
+    @Value("${services.timeout}")
+    private Integer timeout;
+
     private WebClient webClient;
 
     @PostConstruct
@@ -42,7 +48,7 @@ public class PrisonClient implements PrisonService {
                 .body(Mono.just(player), PlayerDto.class)
                 .retrieve()
                 .bodyToMono(PlayerDto.class)
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2))
+                .retryWhen(Retry.fixedDelay(retryCount, Duration.ofSeconds(timeout))
                         .filter(CheckStatusError::isServerError))
                 .onErrorResume(e -> {
                     log.error("Response {}{} ==> {}", baseUrl, uri, e.getMessage());
@@ -57,13 +63,13 @@ public class PrisonClient implements PrisonService {
     @Override
     public ActionDto waiting(String token, ActionDto action) {
         String uri = "/waiting/" + token;
-        return this.connectByAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
+        return this.connectByAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log, retryCount, timeout);
     }
 
     @Override
     public Boolean isWaiting(ActionDto action) {
         String uri = "/iswaiting";
-        return this.connectByIsAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log);
+        return this.connectByIsAction(webClient, baseUrl, uri, HttpMethod.PUT, action, log, retryCount, timeout);
     }
 
     @Override
