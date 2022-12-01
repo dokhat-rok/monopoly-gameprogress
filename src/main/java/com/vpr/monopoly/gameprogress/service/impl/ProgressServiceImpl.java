@@ -105,7 +105,11 @@ public class ProgressServiceImpl implements ProgressService {
         switch (ActionType.valueOf(action.getActionType())) {
             case DropDice:
                 currentActions.remove(action.getActionType());
-                player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
+                PlayerDto oldPlayer = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
+                player = players.stream()
+                        .filter(p -> p.getPlayerFigure().equals(oldPlayer.getPlayerFigure()))
+                        .findFirst()
+                        .orElse(oldPlayer);
                 int firstThrow = ThreadLocalRandom.current().nextInt(1, 7);
                 int secondThrow = ThreadLocalRandom.current().nextInt(1, 7);
 
