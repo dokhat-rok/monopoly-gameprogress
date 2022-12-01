@@ -560,7 +560,7 @@ public class ProgressServiceImpl implements ProgressService {
         actionBuyHouse(player, currentActions);
         actionSellHouse(player, currentActions);
         actionSwap(players, currentActions);
-        currentActions.add(DropDice.toString());
+        currentActions.add(EndTurn.toString());
     }
 
     private void actionBuyRealty(RealtyCardDto card, PlayerDto player, Set<String> currentActions, Set<String> blockedActions) {
