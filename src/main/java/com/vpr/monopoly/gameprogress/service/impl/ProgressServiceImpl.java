@@ -258,7 +258,9 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSellHouse(player, currentActions);
                 break;
             case EndTurn:
-                player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
+                player = players.remove(0);
+                player.setCurrentActions(new ArrayList<>());
+                player.setBlockedActions(new ArrayList<>());
                 players.add(players.remove(0));
                 resultBody.put("nextPlayer", players.get(0));
                 currentActions.remove(action.getActionType());
