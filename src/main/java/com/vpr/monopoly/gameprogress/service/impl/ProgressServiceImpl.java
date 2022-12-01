@@ -309,7 +309,7 @@ public class ProgressServiceImpl implements ProgressService {
 
         if (currentActions.contains(MoneyOperation.toString()) || blockedActions.contains(MoneyOperation.toString())) {
             if (currentActions.remove(DropDice.toString())) blockedActions.add(DropDice.toString());
-            else if (currentActions.remove(EndTurn.toString())) blockedActions.add(EndTurn.toString());
+            if (currentActions.remove(EndTurn.toString())) blockedActions.add(EndTurn.toString());
         }
 
         if(currentActions.contains(DropDice.toString()) && currentActions.contains(EndTurn.toString())){
