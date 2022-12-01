@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.vpr.monopoly.gameprogress.model.enam.ActionType.MoneyOperation;
 
@@ -33,9 +35,12 @@ public class BankServiceImpl implements BankService {
             long money = (long) action.getActionBody().get("money");
 
             player.setMoney(player.getMoney() + money);
-            action.getActionBody().put("playerList", playerList);
-            action.getActionBody().remove("money");
-            result = action;
+            result = ActionDto.builder()
+                    .actionType(MoneyOperation.toString())
+                    .actionBody(new HashMap<>(Map.of(
+                            "playerList", playerList
+                    )))
+                    .build();
         }
 
         log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);
@@ -69,9 +74,12 @@ public class BankServiceImpl implements BankService {
 
             player1.setMoney(player1.getMoney() + money);
             player2.setMoney(player2.getMoney() - money);
-            action.getActionBody().put("playerList", playerList);
-            action.getActionBody().remove("money");
-            result = action;
+            result = ActionDto.builder()
+                    .actionType(MoneyOperation.toString())
+                    .actionBody(new HashMap<>(Map.of(
+                            "playerList", playerList
+                    )))
+                    .build();
         }
         log.info("Response {} ==> {}", ServiceType.BANK.getName(), result);
         return result;

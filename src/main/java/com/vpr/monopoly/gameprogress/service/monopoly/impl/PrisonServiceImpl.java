@@ -57,6 +57,7 @@ public class PrisonServiceImpl implements PrisonService {
                 break;
             case LeavePrisonByCard:
                 player.setPrisonOutCard(player.getPrisonOutCard() - 1);
+                player.setInPrison(0L);
                 servicesManager.getCardsManagerService().comebackPrisonCard(token);
                 break;
             case LeavePrisonByMoney:
@@ -72,6 +73,7 @@ public class PrisonServiceImpl implements PrisonService {
                 List<PlayerDto> playerList = objectMapper
                         .convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
                 player = playerList.get(0);
+                player.setInPrison(0L);
                 break;
         }
         action.getActionBody().put("player", player);
