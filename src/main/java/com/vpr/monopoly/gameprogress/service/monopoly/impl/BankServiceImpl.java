@@ -32,7 +32,7 @@ public class BankServiceImpl implements BankService {
 
             List<PlayerDto> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
             PlayerDto player = playerList.get(0);
-            long money = (long) action.getActionBody().get("money");
+            int money = (int) action.getActionBody().get("money");
 
             player.setMoney(player.getMoney() + money);
             result = ActionDto.builder()
@@ -70,7 +70,7 @@ public class BankServiceImpl implements BankService {
             List<PlayerDto> playerList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
             PlayerDto player1 = playerList.get(0);
             PlayerDto player2 = playerList.get(1);
-            long money = (long) action.getActionBody().get("money");
+            int money = (int) action.getActionBody().get("money");
 
             player1.setMoney(player1.getMoney() + money);
             player2.setMoney(player2.getMoney() - money);
