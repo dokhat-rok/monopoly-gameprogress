@@ -77,6 +77,10 @@ public class ProgressServiceImpl implements ProgressService {
                         .realty(realtyCardList)
                         .realtyColors(MonopolyMap.getColorsRealty(realtyCardList))
                         .decks(servicesManager.getCardsManagerService().initializingDecks())
+                        .isDecksHaveOutPrison(new HashMap<>(Map.of(
+                                Chance.toString(), true,
+                                CommunityChest.toString(), true
+                        )))
                         .history(new ArrayList<>())
                         .build()
                 );
