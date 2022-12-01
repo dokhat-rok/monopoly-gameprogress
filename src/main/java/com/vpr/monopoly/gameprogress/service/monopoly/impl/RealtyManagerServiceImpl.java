@@ -132,7 +132,8 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
         ActionDto result = ActionDto.builder()
                 .actionType(action.getActionType())
                 .actionBody(new HashMap<>(Map.of(
-                        "player", player
+                        "player", player,
+                        "realtyCard", realtyCard
                 )))
                 .build();
         log.info("Response {} ==> {}", REALTY_MANAGER.getName(), result);
