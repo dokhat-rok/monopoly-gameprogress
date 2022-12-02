@@ -727,7 +727,7 @@ public class ProgressServiceImpl implements ProgressService {
                     player.setMoney(bankPlayers.get(0).getMoney());
                 }
                 else{
-                    player.setCredit(card.getParameter().longValue());
+                    player.setCredit(-card.getParameter().longValue());
                     currentActions.add(MoneyOperation.toString());
                 }
                 break;
