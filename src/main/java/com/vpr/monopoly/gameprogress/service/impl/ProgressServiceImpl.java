@@ -196,16 +196,18 @@ public class ProgressServiceImpl implements ProgressService {
                 actionSellHouse(player, currentActions);
                 break;
             case LeavePrisonByCard:
-                player.setPrisonOutCard(player.getPrisonOutCard() - 1);
+                action.getActionBody().put("player", player);
                 action = servicesManager.getPrisonService().waiting(sessionToken, action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 currentActions.remove(action.getActionType());
                 currentActions.remove(LeavePrisonByMoney.toString());
                 break;
             case LeavePrisonByMoney:
+                action.getActionBody().put("player", player);
                 action = servicesManager.getPrisonService().waiting(sessionToken, action);
                 currentActions.remove(action.getActionType());
                 currentActions.remove(LeavePrisonByCard.toString());
+                player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 break;
             case MoneyOperation:
                 List<PlayerDto> playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
