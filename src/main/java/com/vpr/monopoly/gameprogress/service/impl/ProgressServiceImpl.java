@@ -216,10 +216,10 @@ public class ProgressServiceImpl implements ProgressService {
                         : servicesManager.getBankService().playerToBankInteraction(action);
 
                 currentActions.remove(MoneyOperation.toString());
-                player.setCredit(0L);
 
                 playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
                 player = playersList.get(0);
+                player.setCredit(0L);
                 if (playersList.size() > 1) {
                     PlayerDto secondPlayer = playersList.get(1);
                     for (int i = 1; i < players.size(); i++) {
