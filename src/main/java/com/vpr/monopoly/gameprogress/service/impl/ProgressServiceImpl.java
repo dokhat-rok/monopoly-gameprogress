@@ -98,8 +98,11 @@ public class ProgressServiceImpl implements ProgressService {
         List<PlayerDto> players = session.getPlayers();
         Map<String, Object> resultBody = new HashMap<>();
         PlayerDto oldPlayer = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
+
+        if(oldPlayer == null) oldPlayer = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
+        String playerFigure = oldPlayer.getPlayerFigure();
         PlayerDto player = players.stream()
-                .filter(p -> p.getPlayerFigure().equals(oldPlayer.getPlayerFigure()))
+                .filter(p -> p.getPlayerFigure().equals(playerFigure))
                 .findFirst()
                 .orElse(oldPlayer);
         RealtyCardDto realtyCard;
@@ -247,19 +250,13 @@ public class ProgressServiceImpl implements ProgressService {
                 List<RealtyCardDto> offer2 = objectMapper
                         .convertValue(action.getActionBody().get("offerOnPlayer2"), new TypeReference<>() {});
 
-                PlayerDto player1 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
-                PlayerDto oldPlayer1 = players.stream()
-                        .filter(p -> p.getPlayerFigure().equals(player1.getPlayerFigure()))
-                        .findFirst()
-                        .orElse(null);
-
                 PlayerDto player2 =  objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
                 PlayerDto oldPlayer2 = players.stream()
                         .filter(p -> p.getPlayerFigure().equals(player2.getPlayerFigure()))
                         .findFirst()
                         .orElse(null);
 
-                action.getActionBody().put("player1", oldPlayer1);
+                action.getActionBody().put("player1", oldPlayer);
                 action.getActionBody().put("player2", oldPlayer2);
                 action = servicesManager.getRealtyManagerService().playerToPlayerInteraction(action);
                 PlayerDto player11 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
