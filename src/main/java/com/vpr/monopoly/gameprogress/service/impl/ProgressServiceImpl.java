@@ -127,6 +127,7 @@ public class ProgressServiceImpl implements ProgressService {
 
                 if (player.getCountDouble() == 3) {
                     player = servicesManager.getPrisonService().imprisonPlayer(player);
+                    currentActions.remove(DropDice.toString());
                     player.setCountDouble(0);
                     player.setPosition(10);
                 }
