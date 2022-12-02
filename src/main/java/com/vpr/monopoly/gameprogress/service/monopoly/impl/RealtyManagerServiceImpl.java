@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -172,7 +173,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
         PlayerDto player2 = objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
         List<RealtyCardDto> offer1 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer1"), new TypeReference<>() {});
         List<RealtyCardDto> offer2 = objectMapper.convertValue(action.getActionBody().get("offerOfPlayer2"), new TypeReference<>() {});
-        Long money = (Long) action.getActionBody().get("money");
+        BigInteger money = new BigInteger(action.getActionBody().get("money").toString());
         for(RealtyCardDto realtyCard : offer1){
             player1.getRealtyList().remove(realtyCard);
             player2.getRealtyList().add(realtyCard);
@@ -185,7 +186,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .actionType(MoneyOperation.toString())
                 .actionBody(new HashMap<>(Map.of(
                         "playerList", List.of(player1, player2),
-                        "money", money
+                        "money", money.longValue()
                 )))
                 .build()
         );
