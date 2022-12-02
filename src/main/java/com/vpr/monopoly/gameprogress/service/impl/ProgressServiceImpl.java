@@ -132,6 +132,9 @@ public class ProgressServiceImpl implements ProgressService {
                 }
                 else if (player.getCountDouble() == 1 && player.getInPrison() > 0) {
                     player.setPosition(player.getPosition() + firstThrow + secondThrow);
+                    currentActions.remove(DropDice.toString());
+                    currentActions.remove(LeavePrisonByCard.toString());
+                    currentActions.remove(LeavePrisonByMoney.toString());
                 }
 
                 if (player.getInPrison() > 0) {
@@ -197,10 +200,12 @@ public class ProgressServiceImpl implements ProgressService {
                 action = servicesManager.getPrisonService().waiting(sessionToken, action);
                 player = objectMapper.convertValue(action.getActionBody().get("player"), PlayerDto.class);
                 currentActions.remove(action.getActionType());
+                currentActions.remove(LeavePrisonByMoney.toString());
                 break;
             case LeavePrisonByMoney:
                 action = servicesManager.getPrisonService().waiting(sessionToken, action);
                 currentActions.remove(action.getActionType());
+                currentActions.remove(LeavePrisonByCard.toString());
                 break;
             case MoneyOperation:
                 List<PlayerDto> playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
@@ -382,8 +387,7 @@ public class ProgressServiceImpl implements ProgressService {
                 history.add(
                         "Игрок " + player.getPlayerFigure() +
                         " выполнил действие " + action.getActionType() +
-                        " и купил имущество " + realtyCard.getCardName() +
-                        "за " + realtyCard.getCostCard()
+                        " и купил имущество " + realtyCard.getCardName()
                 );
                 break;
             case BuyHouse:
@@ -391,7 +395,8 @@ public class ProgressServiceImpl implements ProgressService {
                 history.add(
                         "Игрок " + player.getPlayerFigure() +
                         " выполнил действие " + action.getActionType() +
-                        " и купил дом за " + realtyCard.getCostHouse()
+                        " и купил дом за " + realtyCard.getCostHouse() +
+                        " на карточке " + realtyCard.getCardName()
                 );
                 break;
             case SellHouse:
@@ -399,7 +404,9 @@ public class ProgressServiceImpl implements ProgressService {
                 history.add(
                         "Игрок " + player.getPlayerFigure() +
                         " выполнил действие " + action.getActionType() +
-                        " и продал дом за " + realtyCard.getCostHouse()
+                        " и продал дом за " + realtyCard.getCostHouse() / 2 +
+                        " на карточке " + realtyCard.getCardName()
+
                 );
                 break;
             case SellRealty:
@@ -407,8 +414,7 @@ public class ProgressServiceImpl implements ProgressService {
                 history.add(
                         "Игрок " + player.getPlayerFigure() +
                         " выполнил действие " + action.getActionType() +
-                        " и продал имущество" + realtyCard.getCardName() +
-                        " за " + realtyCard.getCostCard()
+                        " и заложил имущество" + realtyCard.getCardName()
                 );
                 break;
             case LeavePrisonByCard:
