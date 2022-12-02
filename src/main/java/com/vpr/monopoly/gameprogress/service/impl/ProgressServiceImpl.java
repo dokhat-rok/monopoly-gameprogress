@@ -287,12 +287,19 @@ public class ProgressServiceImpl implements ProgressService {
                 break;
             case GiveUp:
                 for(RealtyCardDto realtyCardDto : player.getRealtyList()){
-                    session.getRealty().remove(realtyCardDto);
-                    realtyCardDto.setOwner(null);
-                    session.getRealty().add(realtyCardDto);
+                    RealtyCardDto oldRealty = session.getRealty().stream()
+                            .filter(r -> r.getPosition() == realtyCardDto.getPosition())
+                            .findFirst()
+                            .orElse(RealtyCardDto.builder().build());
+                    session.getRealty().remove(oldRealty);
+                    oldRealty.setOwner(null);
+                    session.getRealty().add(oldRealty);
                 }
                 session.getRealty().sort(Comparator.comparing(RealtyCardDto::getPosition));
                 players.remove(0);
+                resultBody.put("nextPlayer", players.get(0));
+                players.get(0).setCurrentActions(List.of(DropDice.toString()));
+                break;
         }
         checkCredit(player, currentActions, blockedActions);
 
@@ -468,7 +475,7 @@ public class ProgressServiceImpl implements ProgressService {
                 history.add(
                         "Игрок " + player.getPlayerFigure() +
                         " выполнил действие " + action.getActionType() +
-                        " и обменялся с игроком " + player2
+                        " и обменялся с игроком " + player2.getPlayerFigure()
                 );
                 break;
             case EndTurn:
@@ -708,6 +715,8 @@ public class ProgressServiceImpl implements ProgressService {
                 break;
             }
         }
+
+        if(position == -1) return;
         session.getPlayers().add(position, player);
     }
 
