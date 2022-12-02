@@ -246,19 +246,33 @@ public class ProgressServiceImpl implements ProgressService {
                         .convertValue(action.getActionBody().get("offerOnPlayer1"), new TypeReference<>() {});
                 List<RealtyCardDto> offer2 = objectMapper
                         .convertValue(action.getActionBody().get("offerOnPlayer2"), new TypeReference<>() {});
-                action.getActionBody().put("player1", player);
-                action = servicesManager.getRealtyManagerService().playerToPlayerInteraction(action);
-                PlayerDto player1 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
-                swapPlayersAction(session, offer2, player1);
-                PlayerDto player2 = objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
-                swapPlayersAction(session, offer1, player2);
 
-                player = player1;
-                this.updatePlayerInSession(player2, session);
+                PlayerDto player1 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
+                PlayerDto oldPlayer1 = players.stream()
+                        .filter(p -> p.getPlayerFigure().equals(player1.getPlayerFigure()))
+                        .findFirst()
+                        .orElse(null);
+
+                PlayerDto player2 =  objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
+                PlayerDto oldPlayer2 = players.stream()
+                        .filter(p -> p.getPlayerFigure().equals(player2.getPlayerFigure()))
+                        .findFirst()
+                        .orElse(null);
+
+                action.getActionBody().put("player1", oldPlayer1);
+                action.getActionBody().put("player2", oldPlayer2);
+                action = servicesManager.getRealtyManagerService().playerToPlayerInteraction(action);
+                PlayerDto player11 = objectMapper.convertValue(action.getActionBody().get("player1"), PlayerDto.class);
+                swapPlayersAction(session, offer2, player11);
+                PlayerDto player22 = objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
+                swapPlayersAction(session, offer1, player22);
+
+                player = player11;
+                this.updatePlayerInSession(player22, session);
                 session.getRealty().sort(Comparator.comparing(RealtyCardDto::getPosition));
                 resultBody.putAll(new HashMap<>(Map.of(
-                        "player1", player1,
-                        "player2", player2
+                        "player1", player11,
+                        "player2", player22
                 )));
                 currentActions.remove(action.getActionType());
                 actionSellRealty(player, currentActions);
