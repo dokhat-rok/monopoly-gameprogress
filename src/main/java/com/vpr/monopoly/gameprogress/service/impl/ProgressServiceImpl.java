@@ -404,7 +404,7 @@ public class ProgressServiceImpl implements ProgressService {
                 history.add(
                         "Игрок " + player.getPlayerFigure() +
                         " выполнил действие " + action.getActionType() +
-                        " и продал дом за " + realtyCard.getCostHouse() +
+                        " и продал дом за " + realtyCard.getCostHouse() / 2 +
                         " на карточке " + realtyCard.getCardName()
 
                 );
