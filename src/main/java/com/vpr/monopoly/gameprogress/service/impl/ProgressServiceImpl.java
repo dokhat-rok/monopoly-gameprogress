@@ -69,6 +69,7 @@ public class ProgressServiceImpl implements ProgressService {
         }
 
         Collections.shuffle(newPlayers);
+        newPlayers.get(0).setCurrentActions(new ArrayList<>(List.of(DropDice.toString())));
         String token = LocalDateTime.now().toString();
         List<RealtyCardDto> realtyCardList = servicesManager.getRealtyManagerService().getAllRealtyCards();
         realtyCardList.sort(Comparator.comparing(RealtyCardDto::getPosition));
