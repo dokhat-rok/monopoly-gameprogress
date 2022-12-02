@@ -190,9 +190,14 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 )))
                 .build()
         );
+        List<PlayerDto> players = objectMapper
+                .convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>(){});
         ActionDto result = ActionDto.builder()
                 .actionType(Swap.toString())
-                .actionBody(bankAction.getActionBody())
+                .actionBody(new HashMap<>(Map.of(
+                        "player1", players.get(0),
+                        "player2", players.get(1)
+                )))
                 .build();
         log.info("Response {} ==> {}", REALTY_MANAGER.getName(), result);
         return result;
