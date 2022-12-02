@@ -298,6 +298,7 @@ public class ProgressServiceImpl implements ProgressService {
                 session.getRealty().sort(Comparator.comparing(RealtyCardDto::getPosition));
                 players.remove(0);
                 resultBody.put("nextPlayer", players.get(0));
+                resultBody.put("playerList", players);
                 players.get(0).setCurrentActions(List.of(DropDice.toString()));
                 break;
         }
