@@ -246,9 +246,9 @@ public class ProgressServiceImpl implements ProgressService {
                 break;
             case Swap:
                 List<RealtyCardDto> offer1 = objectMapper
-                        .convertValue(action.getActionBody().get("offerOnPlayer1"), new TypeReference<>() {});
+                        .convertValue(action.getActionBody().get("offerOfPlayer1"), new TypeReference<>() {});
                 List<RealtyCardDto> offer2 = objectMapper
-                        .convertValue(action.getActionBody().get("offerOnPlayer2"), new TypeReference<>() {});
+                        .convertValue(action.getActionBody().get("offerOfPlayer2"), new TypeReference<>() {});
 
                 PlayerDto player2 =  objectMapper.convertValue(action.getActionBody().get("player2"), PlayerDto.class);
                 PlayerDto oldPlayer2 = players.stream()
