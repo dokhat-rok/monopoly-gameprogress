@@ -365,6 +365,7 @@ public class ProgressServiceImpl implements ProgressService {
                 if (card1.getPosition() == realty.getPosition()) {
                     session.getRealty().remove(card1);
                     session.getRealty().add(realty);
+                    break;
                 }
             }
         }
