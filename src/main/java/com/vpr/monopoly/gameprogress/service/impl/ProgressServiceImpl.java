@@ -748,7 +748,7 @@ public class ProgressServiceImpl implements ProgressService {
 
                 player.setPosition(card.getParameter());
                 this.generationPossibleActions(
-                        MapType.REALTY_CELL,
+                        MonopolyMap.getTypeByCellNumber(player.getPosition()),
                         player,
                         players,
                         session,
@@ -762,7 +762,7 @@ public class ProgressServiceImpl implements ProgressService {
                 player.setPosition(player.getPosition() + card.getParameter());
                 this.accrualSalary(player);
                 this.generationPossibleActions(
-                        MapType.REALTY_CELL,
+                        MonopolyMap.getTypeByCellNumber(player.getPosition()),
                         player,
                         players,
                         session,
