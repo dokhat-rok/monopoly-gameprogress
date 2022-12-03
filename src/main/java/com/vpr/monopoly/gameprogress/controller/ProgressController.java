@@ -33,7 +33,10 @@ public class ProgressController {
             @Size(min = 2, max = 8) @RequestBody String[] playerFigures
     ){
         StartDataDto startData = progressService.startGame(playerFigures);
-        log.info("Create {} players with figures {}",playerFigures.length, playerFigures);
+        log.info("Create {} players with figures {} by session token {}",
+                playerFigures.length,
+                playerFigures,
+                startData.getToken());
         return ResponseEntity.ok(startData);
     }
 
@@ -54,7 +57,7 @@ public class ProgressController {
             @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken
     ){
         List<String> history = progressService.endGame(sessionToken);
-        log.info("End game by session {}", sessionToken);
+        log.info("End game session by token {}", sessionToken);
         return ResponseEntity.ok(history);
     }
 
@@ -64,7 +67,7 @@ public class ProgressController {
             @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken
     ){
         StartDataDto continueData = progressService.continueGame(sessionToken);
-        log.info("Continue game by token {}", sessionToken);
+        log.info("Continue game session by token {}", sessionToken);
         return ResponseEntity.ok(continueData);
     }
 }
