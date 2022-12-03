@@ -57,6 +57,6 @@ public class SessionRepositoryImpl implements SessionRepository {
         for(String key : keys){
             template.opsForValue().getAndDelete(key);
         }
-        return false;
+        return true;
     }
 }

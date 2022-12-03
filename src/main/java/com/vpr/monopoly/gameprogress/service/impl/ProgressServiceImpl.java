@@ -327,6 +327,7 @@ public class ProgressServiceImpl implements ProgressService {
     @Override
     public List<String> endGame(String sessionToken) {
         SessionDto session = sessionRepository.get(sessionToken);
+        sessionRepository.remove(sessionToken);
         return session.getHistory();
     }
 
