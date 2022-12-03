@@ -1,37 +1,31 @@
 package com.vpr.monopoly.gameprogress.model.enam;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
 
 @Schema(description = "Тип действия")
-@Getter
 public enum ActionType {
 
-    DROP_DICE("DropDice"),
+    DropDice,
 
-    END_TURN("EndTurn"),
+    EndTurn,
 
-    BUY_REALTY("BuyRealty"),
+    BuyRealty,
 
-    BUY_HOUSE("BuyHouse"),
+    BuyHouse,
 
-    lEAVE_PRISON_BY_CARD("leavePrisonByCard"),
+    LeavePrisonByCard,
 
-    lEAVE_PRISON_BY_MONEY("leavePrisonByMoney"),
+    LeavePrisonByMoney,
 
-    SELL_HOUSE("SellHouse"),
+    SellHouse,
 
-    SELL_REALTY("SellRealty"),
+    SellRealty,
 
-    MONEY_OPERATION("MoneyOperation"),
+    MoneyOperation,
 
-    SWAP("Swap"),
+    Swap,
 
-    WAITING("Waiting");
+    Waiting,
 
-    private final String label;
-
-    ActionType(String label) {
-        this.label = label;
-    }
+    GiveUp
 }

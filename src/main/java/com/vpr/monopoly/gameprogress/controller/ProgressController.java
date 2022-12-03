@@ -2,7 +2,7 @@ package com.vpr.monopoly.gameprogress.controller;
 
 
 import com.vpr.monopoly.gameprogress.model.*;
-import com.vpr.monopoly.gameprogress.model.enam.ActionType;
+import com.vpr.monopoly.gameprogress.service.ProgressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,11 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Min;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 import static com.vpr.monopoly.gameprogress.config.OpenApiConfig.PROGRESS;
 
@@ -28,84 +25,46 @@ import static com.vpr.monopoly.gameprogress.config.OpenApiConfig.PROGRESS;
 @Slf4j
 public class ProgressController {
 
+    private final ProgressService progressService;
+
     @Operation(summary = "Запрос начальных данных для начала игровой сессии")
-    @PostMapping("/start/{count}")
+    @PostMapping("/start")
     public ResponseEntity<StartDataDto> startGame(
-            @PathVariable @Min(2) @Parameter(description = "Количество игроков", example = "2") Long count,
-            @RequestBody String[] playerFigures
+            @Size(min = 2, max = 8) @RequestBody String[] playerFigures
     ){
-        log.info("Create {} players with figures {}", count, playerFigures);
-        ArrayList<PlayerDto> players = new ArrayList<>();
-        players.add(PlayerDto.builder()
-                .lastRoll(new int[2])
-                .money(10000L)
-                .realtyList(new ArrayList<>())
-                .playerFigure("Car")
-                .build()
-        );
-        players.add(PlayerDto.builder()
-                .lastRoll(new int[2])
-                .money(10000L)
-                .realtyList(new ArrayList<>())
-                .playerFigure("Ship")
-                .build()
-        );
-        ArrayList<RealtyCardDto> realty = new ArrayList<>();
-        realty.add(RealtyCardDto.builder()
-                .position(4)
-                .streetName("Пушкинская")
-                .owner("Boot")
-                .priceMap(Map.of(
-                        0L, 10L,
-                        1L, 50L,
-                        2L, 150L,
-                        3L, 310L,
-                        4L, 500L,
-                        5L, 870L
-                ))
-                .costCard(100L)
-                .color("Yellow")
-                .build()
-        );
-        return ResponseEntity.ok(
-                new StartDataDto()
-                        .toBuilder()
-                        .token(String.valueOf(System.currentTimeMillis()))
-                        .players(players)
-                        .realtyList(realty)
-                        .build()
-        );
+        StartDataDto startData = progressService.startGame(playerFigures);
+        log.info("Create {} players with figures {}",playerFigures.length, playerFigures);
+        return ResponseEntity.ok(startData);
     }
 
     @Operation(summary = "Запрос на действие игрока в определенной сессии")
     @PutMapping("/action/{token}")
-    public ResponseEntity<ActionDto> actionPlayer(@PathVariable(name = "token") String token, @RequestBody ActionDto action){
-        log.info("Player action");
-        Map<String, Object> actionBody = new HashMap<>();
-        actionBody.put(
-                "Player",
-                PlayerDto.builder()
-                    .lastRoll(new int[]{5, 0})
-                    .money(10000L)
-                    .realtyList(new ArrayList<>())
-                    .playerFigure("Ship")
-                    .build()
-        );
-        return ResponseEntity.ok(
-                new ActionDto()
-                        .toBuilder()
-                        .actionBody(actionBody)
-                        .actionType(ActionType.DROP_DICE.getLabel())
-                        .build()
-        );
+    public ResponseEntity<ActionDto> actionPlayer(
+            @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken,
+            @RequestBody ActionDto action
+    ){
+        ActionDto resultAction = progressService.actionPlayer(sessionToken, action);
+        log.info("Player action {}", action.getActionType());
+        return ResponseEntity.ok(resultAction);
     }
 
     @Operation(summary = "Окончание игровой сессии и получение истории хода игры")
     @GetMapping("/endgame/{token}")
-    public ResponseEntity<String> endGame(@PathVariable(name = "token") String token){
-        log.info("End game");
-        return ResponseEntity.ok(
-                "History"
-        );
+    public ResponseEntity<List<String>> endGame(
+            @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken
+    ){
+        List<String> history = progressService.endGame(sessionToken);
+        log.info("End game by session {}", sessionToken);
+        return ResponseEntity.ok(history);
+    }
+
+    @Operation(summary = "Продолжить начатую ранее сессию")
+    @GetMapping("/continue/{token}")
+    public ResponseEntity<StartDataDto> continueGame(
+            @PathVariable("token") @Parameter(description = "Токен сессии", example = "token") String sessionToken
+    ){
+        StartDataDto continueData = progressService.continueGame(sessionToken);
+        log.info("Continue game by token {}", sessionToken);
+        return ResponseEntity.ok(continueData);
     }
 }

@@ -1,6 +1,5 @@
 package com.vpr.monopoly.gameprogress.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +8,12 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
-@Schema(description = "Активная сессия с текущими данными этой игры")
+
+/**
+ * Активная сессия с текущими данными этой игры
+ */
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -18,21 +21,33 @@ import java.util.List;
 @RedisHash("SESSION")
 public class SessionDto implements Serializable {
 
-    @Schema(description = "Список игроков на поле")
+    /**
+     * Список игроков на поле
+     */
     private List<PlayerDto> players;
 
-    @Schema(description = "Список карточек имущества")
+    /**
+     * Список карточек имущества
+     */
     private List<RealtyCardDto> realty;
 
-    @Schema(description = "Текущая колода карточек шанс")
-    private List<CardDto> chanceCards;
+    /**
+     * Количество карт имущества с определенным цветом
+     */
+    private Map<String, Integer> realtyColors;
 
-    @Schema(description = "Текущая колода карточек городской казны")
-    private List<CardDto> communityChestCards;
+    /**
+     * Колоды
+     */
+    private Map<String, List<CardDto>> decks;
 
-    @Schema(description = "Список игроков в тюрьме")
-    private List<PlayerDto> playersInPrison;
+    /**
+     * Наличие карты выхода из тюрьмы в каждой колоде на данный момент
+     */
+    private Map<String, Boolean> isDecksHaveOutPrison;
 
-    @Schema(description = "История хода игры")
+    /**
+     * История хода игры
+     */
     private List<String> history;
 }
