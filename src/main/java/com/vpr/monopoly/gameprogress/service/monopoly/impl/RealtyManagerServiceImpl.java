@@ -11,6 +11,7 @@ import com.vpr.monopoly.gameprogress.service.ServicesManager;
 import com.vpr.monopoly.gameprogress.service.monopoly.RealtyManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -28,6 +29,12 @@ import static com.vpr.monopoly.gameprogress.model.enam.ServiceType.REALTY_MANAGE
 @Slf4j
 public class RealtyManagerServiceImpl implements RealtyManagerService {
 
+    @Value("${progress.utility.name}")
+    private String utility;
+
+    @Value("${progress.station.name}")
+    private String station;
+
     private final ObjectMapper objectMapper;
 
     private ServicesManager servicesManager;
@@ -43,18 +50,20 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 if(player.getPlayerFigure().equals(realtyCard.getOwner())){
                     money /= 2;
                 }
+
                 else if(realtyCard.getOwner() != null){
                     return action;
                 }
-                ActionDto bankAction = servicesManager.getBankService().playerToBankInteraction(
-                        ActionDto.builder()
-                                .actionType(MoneyOperation.toString())
-                                .actionBody(new HashMap<>(Map.of(
-                                        "playerList", List.of(player),
-                                        "money", -money
-                                )))
-                                .build()
-                );
+                ActionDto bankAction = ActionDto.builder()
+                        .actionType(MoneyOperation.toString())
+                        .actionBody(new HashMap<>(Map.of(
+                                "playerList", List.of(player),
+                                "money", -money
+                        )))
+                        .build();
+                if(!servicesManager.getBankService().isPlayerToBankInteraction(bankAction)) return action;
+                bankAction = servicesManager.getBankService().playerToBankInteraction(bankAction);
+
                 List<PlayerDto> playerList = objectMapper.convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>() {});
                 player = playerList.get(0);
                 realtyCard.setOwner(player.getPlayerFigure());
@@ -116,6 +125,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 player.getRealtyList().remove(realtyCard);
                 realtyCard.setCountHouse(realtyCard.getCountHouse() + 1);
                 player.getRealtyList().add(realtyCard);
+                break;
             case SellHouse:
                 if(realtyCard.getCountHouse() <= 0){
                     return action;
@@ -176,10 +186,12 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
         BigInteger money = new BigInteger(action.getActionBody().get("money").toString());
         for(RealtyCardDto realtyCard : offer1){
             player1.getRealtyList().remove(realtyCard);
+            realtyCard.setOwner(player2.getPlayerFigure());
             player2.getRealtyList().add(realtyCard);
         }
         for(RealtyCardDto realtyCard : offer2){
             player2.getRealtyList().remove(realtyCard);
+            realtyCard.setOwner(player1.getPlayerFigure());
             player1.getRealtyList().add(realtyCard);
         }
         ActionDto bankAction = servicesManager.getBankService().playerToPlayerInteraction(ActionDto.builder()
@@ -192,6 +204,10 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
         );
         List<PlayerDto> players = objectMapper
                 .convertValue(bankAction.getActionBody().get("playerList"), new TypeReference<>(){});
+
+        this.checkMonopolies(players.get(0));
+        this.checkMonopolies(players.get(1));
+
         ActionDto result = ActionDto.builder()
                 .actionType(Swap.toString())
                 .actionBody(new HashMap<>(Map.of(
@@ -283,7 +299,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .costCard(200L)
                 .costHouse(0L)
                 .countHouse(0L)
-                .color("port")
+                .color(station)
                 .build()
         );
         realtyCardsList.add(RealtyCardDto.builder()
@@ -369,7 +385,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .costCard(150L)
                 .costHouse(0L)
                 .countHouse(0L)
-                .color("utilities")
+                .color(utility)
                 .build()
         );
         realtyCardsList.add(RealtyCardDto.builder()
@@ -421,7 +437,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .costCard(200L)
                 .costHouse(0L)
                 .countHouse(0L)
-                .color("port")
+                .color(station)
                 .build()
         );
         realtyCardsList.add(RealtyCardDto.builder()
@@ -546,7 +562,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .costCard(200L)
                 .costHouse(0L)
                 .countHouse(0L)
-                .color("port")
+                .color(station)
                 .build()
         );
         realtyCardsList.add(RealtyCardDto.builder()
@@ -596,7 +612,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .costCard(150L)
                 .costHouse(0L)
                 .countHouse(0L)
-                .color("utilities")
+                .color(utility)
                 .build()
         );
         realtyCardsList.add(RealtyCardDto.builder()
@@ -684,7 +700,7 @@ public class RealtyManagerServiceImpl implements RealtyManagerService {
                 .costCard(200L)
                 .costHouse(0L)
                 .countHouse(0L)
-                .color("port")
+                .color(station)
                 .build()
         );
         realtyCardsList.add(RealtyCardDto.builder()

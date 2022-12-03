@@ -12,6 +12,7 @@ import com.vpr.monopoly.gameprogress.repository.SessionRepository;
 import com.vpr.monopoly.gameprogress.service.ProgressService;
 import com.vpr.monopoly.gameprogress.service.ServicesManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ import static com.vpr.monopoly.gameprogress.model.enam.CardType.CommunityChest;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProgressServiceImpl implements ProgressService {
 
     private final SessionRepository sessionRepository;
@@ -129,6 +131,17 @@ public class ProgressServiceImpl implements ProgressService {
                     player.setCountDouble(0);
                 }
 
+                if (player.getInPrison() > 0) {
+                    ActionDto prisonAction = ActionDto.builder()
+                            .actionType(Waiting.toString())
+                            .actionBody(new HashMap<>(Map.of(
+                                    "player", player
+                            )))
+                            .build();
+                    prisonAction = servicesManager.getPrisonService().waiting(sessionToken, prisonAction);
+                    player = objectMapper.convertValue(prisonAction.getActionBody().get("player"), PlayerDto.class);
+                }
+
                 if (player.getCountDouble() == 3) {
                     player = servicesManager.getPrisonService().imprisonPlayer(player);
                     currentActions.remove(DropDice.toString());
@@ -142,16 +155,6 @@ public class ProgressServiceImpl implements ProgressService {
                     currentActions.remove(LeavePrisonByMoney.toString());
                 }
 
-                if (player.getInPrison() > 0) {
-                    ActionDto prisonAction = ActionDto.builder()
-                            .actionType(Waiting.toString())
-                            .actionBody(new HashMap<>(Map.of(
-                                    "player", player
-                            )))
-                            .build();
-                    prisonAction = servicesManager.getPrisonService().waiting(sessionToken, prisonAction);
-                    player = objectMapper.convertValue(prisonAction.getActionBody().get("player"), PlayerDto.class);
-                }
                 MapType mapType = MonopolyMap.getTypeByCellNumber(player.getPosition());
                 generationPossibleActions(
                         mapType,
@@ -227,17 +230,8 @@ public class ProgressServiceImpl implements ProgressService {
                 playersList = objectMapper.convertValue(action.getActionBody().get("playerList"), new TypeReference<>() {});
                 player = playersList.get(0);
                 player.setCredit(0L);
-                if (playersList.size() > 1) {
-                    PlayerDto secondPlayer = playersList.get(1);
-                    for (int i = 1; i < players.size(); i++) {
-                        if (players.get(i).getPlayerFigure().equals(secondPlayer.getPlayerFigure())) {
-                            players = new ArrayList<>(players.subList(0, i));
-                            players.add(secondPlayer);
-                            players.addAll(players.subList(i + 1, players.size()));
-                            break;
-                        }
-                    }
-                }
+                if(playersList.size() > 1) this.updatePlayerInSession(playersList.get(1), session);
+
                 resultBody.put("playerList", playersList);
                 currentActions.remove(action.getActionType());
                 actionSellRealty(player, currentActions);
@@ -351,6 +345,16 @@ public class ProgressServiceImpl implements ProgressService {
             currentActions.add(MoneyOperation.toString());
             blockedActions.remove(MoneyOperation.toString());
         }
+
+        if(currentActions == null || player == null || player.getMoney() == null || player.getCredit() == null){
+            log.warn("{}, {}", currentActions, player);
+            return;
+        }
+        if(currentActions.contains(MoneyOperation.toString()) && player.getMoney() <= player.getCredit()){
+            currentActions.remove(MoneyOperation.toString());
+            blockedActions.add(MoneyOperation.toString());
+        }
+
         if (!currentActions.contains(MoneyOperation.toString()) && !blockedActions.contains(MoneyOperation.toString())) {
             currentActions.addAll(blockedActions);
             blockedActions.clear();
@@ -547,24 +551,12 @@ public class ProgressServiceImpl implements ProgressService {
                                     .stream()
                                     .filter(r -> r.getColor().equals(utility) && r.getCountHouse() > -1)
                                     .count();
-                            long multiply = count == 1 ? 4 : 10;
                             int sumDice = player.getLastRoll()[0] + player.getLastRoll()[1];
-                            player.setCredit(sumDice * multiply);
+                            player.setCredit(sumDice * realtyCard.getPriceMap().get(count));
                             break;
                         }
                     }
                 }
-
-                ActionDto bankAction = ActionDto.builder()
-                        .actionType(MoneyOperation.toString())
-                        .actionBody(new HashMap<>(Map.of(
-                                "playerList", List.of(player),
-                                "money", player.getCredit()
-                        )))
-                        .build();
-
-                if (servicesManager.getBankService().isPlayerToBankInteraction(bankAction))
-                    currentActions.add(GiveUp.toString());
 
                 currentActions.add(MoneyOperation.toString());
                 break;
@@ -622,25 +614,25 @@ public class ProgressServiceImpl implements ProgressService {
                         "realtyCard", card
                 )))
                 .build();
-        ActionDto actionMoney = ActionDto.builder()
+        /*ActionDto actionMoney = ActionDto.builder()
                 .actionType(MoneyOperation.toString())
                 .actionBody(new HashMap<>(Map.of(
-                        "player", player,
+                        "playerList", new ArrayList<>(List.of(player)),
                         "money", card.getCostCard()
                 )))
-                .build();
+                .build();*/
 
         if (servicesManager.getRealtyManagerService().isPlayerToBankInteraction(action)){
             currentActions.add(BuyRealty.toString());
         }
-        else if(!card.getOwner().equals(player.getPlayerFigure()) && servicesManager.getBankService().isPlayerToPlayerInteraction(actionMoney)){
+        /*else if(!card.getOwner().equals(player.getPlayerFigure()) && servicesManager.getBankService().isPlayerToPlayerInteraction(actionMoney)){
             player.setCredit(player.getCredit() + card.getCostCard());
             currentActions.add(MoneyOperation.toString());
         }
         else {
             player.setCredit(player.getCredit() + card.getCostCard());
             blockedActions.add(MoneyOperation.toString());
-        }
+        }*/
     }
 
     private void actionSellRealty(PlayerDto player, Set<String> currentActions){
@@ -718,6 +710,7 @@ public class ProgressServiceImpl implements ProgressService {
             }
         }
 
+        player.getRealtyList().sort(Comparator.comparing(RealtyCardDto::getColor));
         if(position == -1) return;
         session.getPlayers().add(position, player);
     }
@@ -810,6 +803,8 @@ public class ProgressServiceImpl implements ProgressService {
                     }
                 });
                 player.setPosition(prisonPosition.get());
+                currentActions.remove(DropDice.toString());
+                blockedActions.remove(DropDice.toString());
                 this.generationPossibleActions(
                         MapType.VISITING_PRISON_CELL,
                         player,
